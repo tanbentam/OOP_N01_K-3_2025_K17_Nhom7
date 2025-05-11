@@ -2,7 +2,7 @@ public class App {
     public static void main(String[] args) {
         // Tạo giáo viên
         Teacher teacher1 = new Teacher("T01", "Thầy Tráng", "CNTT");
-        Teacher teacher2 = new Teacher("T02", "Cô Thu", "Lập Trình Hướng Đối Tượng");
+        Teacher teacher2 = new Teacher("T02", "Cô Thu", "OOP");
 
         // Tạo học sinh
         Student student1 = new Student("S01", "Tân", 20);
