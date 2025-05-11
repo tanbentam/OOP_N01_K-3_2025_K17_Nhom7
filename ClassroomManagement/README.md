@@ -1,4 +1,5 @@
 Câu 1 (1 điểm). Tiêu đề của bài tập lớn cuối kỳ (nhóm sinh viên) lựa chọn là gì ? 
+
 Tiêu đề: Hệ thống quản lý lớp học (Classroom Management System)
 
 Câu 2: Phân tích cơ sở ít nhất 03 đối tượng cần thiết  
