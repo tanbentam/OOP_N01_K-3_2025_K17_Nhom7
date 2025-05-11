@@ -7,5 +7,4 @@ Câu 2: Phân tích cơ sở ít nhất 03 đối tượng cần thiết
 3. Classroom: Đại diện cho lớp học, chứa className, một Teacher, và danh sách các Student.
 
 Link Git repo (Câu 3, 4, 5): https://github.com/NgHaiii/OOP_N01_K-3_2025_K17_Nhom7/tree/nhanhCuaTanDZ
-
-Link ReadMe (Câu 6): https://github.com/username/StudentManagement/blob/main/README.md](https://github.com/NgHaiii/OOP_N01_K-3_2025_K17_Nhom7/blob/nhanhCuaTanDZ/README.md
+Link ReadMe (Câu 6): https://github.com/username/StudentManagement/blob/main/README.md
