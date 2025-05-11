@@ -10,13 +10,19 @@ Câu 2: Phân tích cơ sở ít nhất 03 đối tượng cần thiết
 Câu 3: Cấu trúc thư mục đã làm
 
 Câu 4: Có những Class : + ClassManager.java
+
                         + Classroom.java
+                        
                         + Student.java
+                        
                         + Teacher.java
+                        
                         + App.java
                         
 Câu 5: Có những class kiểm định: + TestClassroom.java
+
                                  + TestStudent.java
+                                 
                                  + TestTeacher.java
 
 Link Git repo (Câu 3, 4, 5): https://github.com/NgHaiii/OOP_N01_K-3_2025_K17_Nhom7/
