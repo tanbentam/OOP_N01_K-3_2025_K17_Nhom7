@@ -13,14 +13,14 @@ public class TestTeacher {
     @Test
     public void testSetName() {
         Teacher teacher = new Teacher("T01", "Thầy Tráng", "CNTT");
-        teacher.setName("Cô Lan");
-        assertEquals("Cô Lan", teacher.getName());
+        teacher.setName("Cô Thu");
+        assertEquals("Cô Thu", teacher.getName());
     }
 
     @Test
     public void testSetSubject() {
         Teacher teacher = new Teacher("T01", "Thầy Tráng", "CNTT");
-        teacher.setSubject("Kinh tế");
-        assertEquals("Kinh tế", teacher.getSubject());
+        teacher.setSubject("OOP");
+        assertEquals("OOP", teacher.getSubject());
     }
 }
