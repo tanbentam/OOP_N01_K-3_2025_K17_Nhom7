@@ -5,9 +5,9 @@ public class App {
         Teacher teacher2 = new Teacher("T02", "Cô Thu", "OOP");
 
         // Tạo học sinh
-        Student student1 = new Student("S01", "Tân", 20);
-        Student student2 = new Student("S02", "Hải",19);
-        Student student3 = new Student("S03", "Lâm", 20);
+        Student student1 = new Student("S01", "Tân", 20, "Toan", 10);
+        Student student2 = new Student("S02", "Hải",19, "Li", 9);
+        Student student3 = new Student("S03", "Lâm", 20, "Ngu Van", 8);
 
         // Tạo lớp học 1
         Classroom classA = new Classroom("K17_CNTT1", teacher1);
