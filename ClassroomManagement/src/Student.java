@@ -1,8 +1,14 @@
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 public class Student {
     private String id;
     private String name;
     private int age;
     private Score score; 
+
+    private List<AttendanceRecord> attendanceRecords = new ArrayList<>();
 
     public Student(String id, String name, int age, String subject, double scoreValue) {
         this.id = id;
@@ -39,6 +45,10 @@ public class Student {
         this.score.setsubject(subject);
         this.score.setscoreValue(scoreValue);
     }
+    //thêm điểm danh
+     public void markAttendance(LocalDate date, boolean isPresent, boolean hasPermission) {
+        attendanceRecords.add(new AttendanceRecord(date, isPresent, hasPermission));
+    }
 
     // Display info
     public void printInfo() {
@@ -46,5 +56,25 @@ public class Student {
         System.out.println("Name: " + name);
         System.out.println("Age: " + age);
         System.out.println("Score: " + score);
+    }
+
+    //ktra hsinh có mặt vào ngày nào
+    public boolean isPresentOnDate(LocalDate date) {
+        for (AttendanceRecord record : attendanceRecords) {
+            if (record.getDate().equals(date)) {
+                return record.isPresent();
+            }
+        }
+        return false; // nếu không có bản ghi thì xem như nghỉ
+    }
+
+    //néu nghỉ học thì có phép không
+     public boolean hasPermissionOnDate(LocalDate date) {
+        for (AttendanceRecord record : attendanceRecords) {
+            if (record.getDate().equals(date)) {
+                return record.hasPermission();
+            }
+        }
+        return false;
     }
 }

@@ -23,8 +23,8 @@ public class Classroom {
         studentList.add(student);
     }
 
-    public void removeStudent(String studentId) {
-        studentList.removeIf(student -> student.getId().equals(studentId));
+    public void removeStudent(Student student) {
+        studentList.remove(student);
     }
 
     public ArrayList<Student> getStudentList() {
