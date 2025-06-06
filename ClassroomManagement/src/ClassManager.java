@@ -95,13 +95,11 @@ public class ClassManager {
             System.out.println("No classes available.");
         } else {
             for (Classroom c : classrooms) {
-            /*    c.printClassInfo();
-                System.out.println("-----------------------");
-            */
                 if (c.getClassName().equalsIgnoreCase(className)) {
                     c.printClassInfo();
+                     System.out.println("-----------------------");
                     return;
-        }
+                    }   
                 }
         }
     }
