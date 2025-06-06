@@ -1,3 +1,4 @@
+
 Bài tập lớn cuối kỳ - Môn Lập trình hướng đối tượng
 
 Nội dung:
@@ -43,8 +44,8 @@ Liệt kê danh sách học sinh, có thể lọc theo:
 			+ Student
 
 			+ Classroom
-
-			+ Teacher (người phụ trách lớp hoặc giảng dạy)
+    
+	                + Teacher (người phụ trách lớp hoặc giảng dạy)
 
 7. Quản lý dữ liệu trong bộ nhớ bằng Collection
 Dữ liệu được lưu trữ và thao tác trong chương trình bằng các cấu trúc:
