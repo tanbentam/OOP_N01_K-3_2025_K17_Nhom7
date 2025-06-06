@@ -52,11 +52,13 @@ public class App {
                 case 1:
                     System.out.print("Nhập ngày (yyyy-mm-dd): ");
                     LocalDate date = LocalDate.parse(scanner.nextLine());
+
                     for (Student student : cls.getStudentList()) {
                         System.out.println("Học sinh: " + student.getName());
                         System.out.print("Có mặt? (y/n): ");
                         boolean present = scanner.nextLine().equalsIgnoreCase("y");
                         boolean permission = false;
+                        
                         if (!present) {
                             System.out.print("Có phép? (y/n): ");
                             permission = scanner.nextLine().equalsIgnoreCase("y");
