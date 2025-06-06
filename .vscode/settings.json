@@ -1,0 +1,7 @@
+{
+     "java.project.referencedLibraries": [
+    "lib/**/*.jar"
+  ],
+  "terminal.integrated.fontFamily": "Consolas, 'Courier New', Arial, 'Segoe UI', monospace",
+  "terminal.integrated.setLocaleVariables": true
+}
