@@ -1,8 +1,9 @@
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.Serializable;
 
-public class Student {
+public class Student implements Serializable {
     private String id;
     private String name;
     private int age;

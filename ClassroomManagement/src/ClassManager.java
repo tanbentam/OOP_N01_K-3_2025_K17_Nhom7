@@ -1,7 +1,8 @@
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.io.Serializable;
 
-public class ClassManager {
+public class ClassManager implements Serializable {
     private ArrayList<Classroom> classrooms;
 
     public ClassManager() {
@@ -39,6 +40,7 @@ public class ClassManager {
         }
     }
 
+
     public void transferStudent(String studentId, String fromClassName, String toClassName) {
     Classroom fromClass = getClassroom(fromClassName);
     Classroom toClass = getClassroom(toClassName);
@@ -71,6 +73,8 @@ public class ClassManager {
         classrooms.add(classroom);
     }
 
+
+
     public boolean removeClassroom(String className) {
         for (Classroom c : classrooms) {
             if (c.getClassName().equalsIgnoreCase(className)) {
@@ -81,6 +85,8 @@ public class ClassManager {
         return false;
     }
 
+
+
     public Classroom getClassroom(String className) {
         for (Classroom c : classrooms) {
             if (c.getClassName().equalsIgnoreCase(className)) {
@@ -90,6 +96,8 @@ public class ClassManager {
         return null;
     }
 
+
+    
     public void printAllClasses(String className) {
         if (classrooms.isEmpty()) {
             System.out.println("No classes available.");
@@ -97,7 +105,8 @@ public class ClassManager {
             for (Classroom c : classrooms) {
                 if (c.getClassName().equalsIgnoreCase(className)) {
                     c.printClassInfo();
-                     System.out.println("-----------------------");
+                     System.out.println
+                     ("-------------------------------------------------");
                     return;
                     }   
                 }

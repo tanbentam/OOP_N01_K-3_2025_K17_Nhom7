@@ -22,3 +22,53 @@ Câu 5: Có những class kiểm định: + TestClassroom.java
 Link Git repo (Câu 3, 4, 5): https://github.com/NgHaiii/OOP_N01_K-3_2025_K17_Nhom7/
 
 Link ReadMe (Câu 6): https://github.com/NgHaiii/OOP_N01_K-3_2025_K17_Nhom7/blob/main/README.md
+---------------------------------------------------------------
+
+
+miêu tả phương thức điểm danh 
+@startuml
+class ClassManager {
+    - classrooms: List<Classroom>
+    + addClassroom(c: Classroom)
+    + getClassroom(name: String): Classroom
+    + loadStudentsFromFile(path: String)
+    + printAllClasses()
+    + printClassInfoByName(name: String)
+}
+
+class Classroom {
+    - className: String
+    - teacher: Teacher
+    - students: List<Student>
+    + addStudent(s: Student)
+    + removeStudent(id: String)
+    + getStudents(): List<Student>
+    + printClassInfo()
+}
+
+class Student {
+    - id: String
+    - name: String
+    - attendance: Map<LocalDate, AttendanceRecord>
+    + markAttendance(date: LocalDate, present: boolean, permission: boolean)
+    + getId(): String
+    + getName(): String
+    + getAttendance(): Map<LocalDate, AttendanceRecord>
+}
+
+class AttendanceRecord {
+    - present: boolean
+    - permission: boolean
+    + isPresent(): boolean
+    + hasPermission(): boolean
+}
+
+class Teacher {
+    - name: String
+    + getName(): String
+}
+
+ClassManager "1" --> "*" Classroom
+Classroom "1" --> "1" Teacher
+Classroom "1" --> "*" Student
+Student "1" --> "*" AttendanceRecord

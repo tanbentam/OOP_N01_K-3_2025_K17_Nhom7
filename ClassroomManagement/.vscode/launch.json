@@ -1,0 +1,12 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Run App with H2",
+      "request": "launch",
+      "mainClass": "App",
+      "vmArgs": "-cp lib/h2-2.2.224.jar;bin"
+    }
+  ]
+}
