@@ -1,9 +1,10 @@
+import java.io.File;
 import java.time.LocalDate;
 import java.util.Scanner;
 
 public class App {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+      /*   Scanner scanner = new Scanner(System.in);
         // Nhập dữ liệu ban đầu
 
         // Bắt đầu chương trình: đọc file dữ liệu hoặc tạo mới
@@ -14,6 +15,7 @@ public class App {
 
         // Sau khi xử lý, lưu lại dữ liệu:
         FileManager.saveData(manager, "data.dat");
+
 
         while (true) {
             displayMenu();
@@ -29,10 +31,45 @@ public class App {
                 continue;
             }
 
-            handleChoice(choice, scanner, manager, cls);
+            handleChoice(choice,className, scanner, manager, cls);
         }
         FileManager.saveData(manager, "data.dat");
         scanner.close();
+        */
+  Scanner scanner = new Scanner(System.in);
+    String filename = "data.dat";
+
+    // Load dữ liệu từ file (nếu có)
+    ClassManager manager = FileManager.loadData(filename);
+
+    // Nếu file chưa có dữ liệu, cho phép nhập mới
+    if (manager.getClassrooms().isEmpty()) {
+        System.out.println("⚠ Dữ liệu trống, vui lòng nhập dữ liệu ban đầu.");
+        manager = initializeClassManager(scanner);
+        FileManager.saveData(manager, filename); // lưu lại ngay sau khi nhập
+    }
+
+    // Vòng lặp menu chính
+    while (true) {
+        displayMenu();
+        int choice = Integer.parseInt(scanner.nextLine());
+
+        if (choice == 0) break;
+
+        System.out.print("Nhập tên lớp: ");
+        String className = scanner.nextLine();
+        Classroom cls = manager.getClassroom(className);
+        if (cls == null) {
+            System.out.println("Không tìm thấy lớp.");
+            continue;
+        }
+
+        handleChoice(choice, className, scanner, manager, cls);
+    }
+
+    // Sau khi kết thúc, lưu lại dữ liệu
+    scanner.close();
+    FileManager.saveData(manager, filename);
     }
 
     private static ClassManager initializeClassManager(Scanner scanner) {
@@ -93,11 +130,12 @@ public class App {
         System.out.println("3. Hiển thị học sinh nghỉ");
         System.out.println("4. Chuyển học sinh sang lớp khác");
         System.out.println("5. Hiển thị danh sách các lớp hiện có");
+        System.out.println("6. Reset");
         System.out.println("0. Thoát");
         System.out.print("Chọn: ");
     }
 
-    private static void handleChoice(int choice, Scanner scanner, ClassManager manager, Classroom cls) {
+    private static void handleChoice(int choice,String classname, Scanner scanner, ClassManager manager, Classroom cls) {
         switch (choice) {
             case 1:
                 markAttendance(scanner, cls);
@@ -112,7 +150,13 @@ public class App {
                 transferStudent(scanner, manager, cls.getClassName());
                 break;
             case 5:
-                manager.printAllClasses("K17_CNTT1");
+                String name = classname;
+                manager.printAllClasses(name);
+                break;
+            case 6:
+                deleteDataFile("data.dat");
+                manager = new ClassManager(); // tạo lại dữ liệu trống
+                System.out.println("✅ Đã xóa toàn bộ dữ liệu.");
                 break;
             default:
                 System.out.println("Lựa chọn không hợp lệ.");
@@ -150,11 +194,26 @@ public class App {
     }
 
     private static void transferStudent(Scanner scanner, ClassManager manager, String className) {
+
         System.out.print("Nhập mã học sinh cần chuyển: ");
         String studentId = scanner.nextLine();
         System.out.print("Nhập tên lớp mới: ");
         String newClass = scanner.nextLine();
         manager.transferStudent(studentId, className, newClass);
     }
+
+    public static void deleteDataFile(String filename) {
+    File file = new File(filename);
+    if (file.exists()) {
+        if (file.delete()) {
+            System.out.println("✅ File đã được xóa thành công.");
+        } else {
+            System.out.println("⚠ Không thể xóa file.");
+        }
+    } else {
+        System.out.println("⚠ File không tồn tại.");
+    }
+}
+
 }
 

@@ -5,6 +5,9 @@ public class FileManager {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename))) {
             oos.writeObject(manager);
             System.out.println("Đã lưu dữ liệu thành công vào file: " + filename);
+
+            System.out.println("👉 Đường dẫn file: " + new File(filename).getAbsolutePath());
+
         } catch (IOException e) {
             e.printStackTrace();
         }

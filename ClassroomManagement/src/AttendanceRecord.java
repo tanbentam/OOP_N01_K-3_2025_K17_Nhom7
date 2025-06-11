@@ -1,6 +1,7 @@
 import java.time.LocalDate;
+import java.io.Serializable;
 //bản ghi điểm danh
-public class AttendanceRecord {
+public class AttendanceRecord implements Serializable {
     private LocalDate date;
     private boolean isPresent;
     private boolean hasPermission;

@@ -1,5 +1,6 @@
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 import java.io.Serializable;
 
 public class ClassManager implements Serializable {
@@ -96,14 +97,18 @@ public class ClassManager implements Serializable {
         return null;
     }
 
+      public List<Classroom> getClassrooms() {
+        return classrooms;
+    }
+
 
     
-    public void printAllClasses(String className) {
+    public void printAllClasses(String classroom) {
         if (classrooms.isEmpty()) {
             System.out.println("No classes available.");
         } else {
             for (Classroom c : classrooms) {
-                if (c.getClassName().equalsIgnoreCase(className)) {
+                if (c.getClassName().equalsIgnoreCase(classroom)) {
                     c.printClassInfo();
                      System.out.println
                      ("-------------------------------------------------");
