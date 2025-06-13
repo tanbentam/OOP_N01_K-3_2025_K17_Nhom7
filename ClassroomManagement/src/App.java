@@ -4,39 +4,7 @@ import java.util.Scanner;
 
 public class App {
     public static void main(String[] args) {
-      /*   Scanner scanner = new Scanner(System.in);
-        // Nhập dữ liệu ban đầu
-
-        // Bắt đầu chương trình: đọc file dữ liệu hoặc tạo mới
-        ClassManager manager = FileManager.loadData("data.dat");
-
-        // (phần nhập dữ liệu như ở trên bạn làm)
-        manager = initializeClassManager(scanner);
-
-        // Sau khi xử lý, lưu lại dữ liệu:
-        FileManager.saveData(manager, "data.dat");
-
-
-        while (true) {
-            displayMenu();
-            int choice = Integer.parseInt(scanner.nextLine());
-
-            if (choice == 0) break;
-
-            System.out.print("Nhập tên lớp: ");
-            String className = scanner.nextLine();
-            Classroom cls = manager.getClassroom(className);
-            if (cls == null) {
-                System.out.println("Không tìm thấy lớp.");
-                continue;
-            }
-
-            handleChoice(choice,className, scanner, manager, cls);
-        }
-        FileManager.saveData(manager, "data.dat");
-        scanner.close();
-        */
-  Scanner scanner = new Scanner(System.in);
+    Scanner scanner = new Scanner(System.in);
     String filename = "data.dat";
 
     // Load dữ liệu từ file (nếu có)
