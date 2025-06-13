@@ -1,4 +1,4 @@
-/*import org.junit.Test;
+import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class TestStudent {
@@ -23,4 +23,4 @@ public class TestStudent {
         student.setAge(17);
         assertEquals(17, student.getAge());
     }
-}*/
+}

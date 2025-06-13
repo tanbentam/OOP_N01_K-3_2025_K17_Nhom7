@@ -1,6 +1,7 @@
 import java.util.ArrayList;
+import java.io.Serializable;
 
-public class Classroom {
+public class Classroom implements Serializable {
     private String className;
     private Teacher teacher; // Lưu đối tượng Teacher
     private ArrayList<Student> studentList; // Lưu danh sách đối tượng Student

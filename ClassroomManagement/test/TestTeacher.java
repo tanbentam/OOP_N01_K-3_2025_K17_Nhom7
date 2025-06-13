@@ -1,4 +1,4 @@
-/*import org.junit.Test;
+import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class TestTeacher {
@@ -23,4 +23,4 @@ public class TestTeacher {
         teacher.setSubject("OOP");
         assertEquals("OOP", teacher.getSubject());
     }
-}*/
+}

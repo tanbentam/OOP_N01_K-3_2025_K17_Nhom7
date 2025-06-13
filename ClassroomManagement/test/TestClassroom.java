@@ -1,4 +1,4 @@
-/*import org.junit.Test;
+import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class TestClassroom {
@@ -30,4 +30,4 @@ public class TestClassroom {
         classroom.removeStudent("S01");
         assertEquals(0, classroom.getStudentList().size());
     }
-}*/
+}

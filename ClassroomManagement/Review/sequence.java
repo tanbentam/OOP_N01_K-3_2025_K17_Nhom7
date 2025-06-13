@@ -32,7 +32,7 @@ public class sequence {
             }
             }
          public selector getSelector() { 
-         return new  SSelector();
+            return new  SSelector();
             }
          }
 

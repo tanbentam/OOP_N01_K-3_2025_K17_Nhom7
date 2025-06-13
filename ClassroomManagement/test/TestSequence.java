@@ -1,4 +1,4 @@
-/*import org.junit.Test;
+import org.junit.Test;
 
 import ClassroomManagement.Review.sequence;
 
@@ -20,4 +20,4 @@ public class TestSequence {
           sl.next();
            }
      }
-}*/
+}

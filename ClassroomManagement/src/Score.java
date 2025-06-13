@@ -1,4 +1,6 @@
-public class Score {
+import java.io.Serializable;
+
+public class Score implements Serializable {
     private String StudentId; 
     private String subject; 
     private double scoreValue; 
