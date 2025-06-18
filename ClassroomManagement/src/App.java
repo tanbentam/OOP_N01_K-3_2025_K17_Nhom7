@@ -150,15 +150,27 @@ public class App {
     }
 
     private static void displayPresentStudents(Scanner scanner, ClassManager manager, String className) {
-        System.out.print("Nhập ngày (yyyy-mm-dd): ");
-        LocalDate presentDate = LocalDate.parse(scanner.nextLine());
-        manager.displayPresentStudents(className, presentDate);
+        try {
+            System.out.print("Nhập ngày (yyyy-mm-dd): ");
+            LocalDate presentDate = LocalDate.parse(scanner.nextLine());
+            manager.displayPresentStudents(className, presentDate);
+        } catch (Exception e) {
+            System.err.println("Lỗi khi xuất báo cáo sinh viên có mặt: " + e.getMessage());
+        } finally {
+            System.out.println("Kết thúc xuất báo cáo sinh viên có mặt.");
+        }
     }
 
     private static void displayAbsentStudents(Scanner scanner, ClassManager manager, String className) {
-        System.out.print("Nhập ngày (yyyy-mm-dd): ");
-        LocalDate absentDate = LocalDate.parse(scanner.nextLine());
-        manager.displayAbsentStudents(className, absentDate);
+        try {
+            System.out.print("Nhập ngày (yyyy-mm-dd): ");
+            LocalDate absentDate = LocalDate.parse(scanner.nextLine());
+            manager.displayAbsentStudents(className, absentDate);
+        } catch (Exception e) {
+            System.err.println("Lỗi khi xuất báo cáo sinh viên nghỉ: " + e.getMessage());
+        } finally {
+            System.out.println("Kết thúc xuất báo cáo sinh viên nghỉ.");
+        }
     }
 
     private static void transferStudent(Scanner scanner, ClassManager manager, String className) {
