@@ -147,8 +147,7 @@ public class App {
             }
             student.markAttendance(date, present, permission);
         }
-    }
-
+    } // Xây dựng khối bắt lỗi cho chức năng xuất báo cáo học sinh có mặt hay nghỉ học- nguyễn văn hải
     private static void displayPresentStudents(Scanner scanner, ClassManager manager, String className) {
         try {
             System.out.print("Nhập ngày (yyyy-mm-dd): ");
