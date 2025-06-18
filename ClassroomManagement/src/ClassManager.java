@@ -1,5 +1,6 @@
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.io.Serializable;
 
@@ -89,11 +90,16 @@ public class ClassManager implements Serializable {
 
 
     public Classroom getClassroom(String className) {
+        try{
         for (Classroom c : classrooms) {
             if (c.getClassName().equalsIgnoreCase(className)) {
                 return c;
             }
         }
+        }
+        catch (ConcurrentModificationException e) {
+            System.out.println("Lỗi khi xóa lớp: " + e.getMessage());
+}
         return null;
     }
 

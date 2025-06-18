@@ -6,9 +6,16 @@ public class App {
     public static void main(String[] args) {
     Scanner scanner = new Scanner(System.in);
     String filename = "data.dat";
+    ClassManager manager = null;
 
     // Load dữ liệu từ file (nếu có)
-    ClassManager manager = FileManager.loadData(filename);
+    try {
+        // Load dữ liệu từ file
+        manager = FileManager.loadData(filename);
+    } catch (Exception e) {
+        System.out.println("⚠ Lỗi khi tải dữ liệu: " + e.getMessage());
+        manager = new ClassManager(); // fallback
+    }
 
     // Nếu file chưa có dữ liệu, cho phép nhập mới
     if (manager.getClassrooms().isEmpty()) {
@@ -132,10 +139,15 @@ public class App {
     }
 
     private static void markAttendance(Scanner scanner, Classroom cls) {
+        LocalDate date = null;
         System.out.print("Nhập ngày (yyyy-mm-dd): ");
-        LocalDate date = LocalDate.parse(scanner.nextLine());
-
-        for (Student student : cls.getStudentList()) {
+        try{
+         date = LocalDate.parse(scanner.nextLine());
+        }
+        catch(Exception e){
+            System.out.println("lỗi nhập ngày " +e.getMessage());
+        }
+            for (Student student : cls.getStudentList()) {
             System.out.println("Học sinh: " + student.getName());
             System.out.print("Có mặt? (y/n): ");
             boolean present = scanner.nextLine().equalsIgnoreCase("y");
@@ -151,6 +163,7 @@ public class App {
 
     private static void displayPresentStudents(Scanner scanner, ClassManager manager, String className) {
         System.out.print("Nhập ngày (yyyy-mm-dd): ");
+
         LocalDate presentDate = LocalDate.parse(scanner.nextLine());
         manager.displayPresentStudents(className, presentDate);
     }
@@ -184,4 +197,3 @@ public class App {
 }
 
 }
-
