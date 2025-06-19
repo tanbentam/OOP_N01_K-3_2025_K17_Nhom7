@@ -92,7 +92,8 @@ public class ClassManager {
 
   _ Ảnh chạy chương trình:
    
-   ![chay-chuong-trinh](file/image/123/chay_chuong_trinh.jpg)
+   ![Screenshot 2025-06-19 164751](https://github.com/user-attachments/assets/be81b0fa-6c18-461d-98b0-62799714d51f)
+
 
    Câu 3:
 
