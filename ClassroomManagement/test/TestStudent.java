@@ -1,4 +1,7 @@
 import org.junit.Test;
+
+import main.java.com.model.Student;
+
 import static org.junit.Assert.*;
 
 public class TestStudent {

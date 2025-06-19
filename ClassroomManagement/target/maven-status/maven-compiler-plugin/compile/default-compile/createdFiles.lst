@@ -1,0 +1,11 @@
+com\model\ClassManager.class
+com\model\Teacher.class
+com\model\AttendanceRecord.class
+com\model\Student.class
+com\Main.class
+com\model\Score.class
+com\model\FileManager.class
+com\App.class
+com\model\Classroom.class
+com\controller\AttendanceController.class
+com\service\AttendanceService.class

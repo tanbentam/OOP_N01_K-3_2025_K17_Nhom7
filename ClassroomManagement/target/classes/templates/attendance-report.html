@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Kết quả báo cáo điểm danh</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <h2 th:text="'Báo cáo học sinh ' + (${type} == 'present' ? 'có mặt' : 'vắng mặt')"></h2>
+    <p th:text="'Lớp: ' + ${className} + ', Ngày: ' + ${date}"></p>
+    <ul>
+        <li th:each="s : ${students}" th:text="${s.name}"></li>
+    </ul>
+    <a th:href="@{/attendance/report}">Quay lại</a>
+</body>
+</html>

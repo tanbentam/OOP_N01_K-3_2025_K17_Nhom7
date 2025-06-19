@@ -1,4 +1,9 @@
 import org.junit.Test;
+
+import main.java.com.model.Classroom;
+import main.java.com.model.Student;
+import main.java.com.model.Teacher;
+
 import static org.junit.Assert.*;
 
 public class TestClassroom {
