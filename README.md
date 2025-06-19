@@ -13,6 +13,7 @@ PRACTICE 6:
 Câu 1:
 _ Lưu đồ thuật toán:
 
+![luu-do](https://github.com/user-attachments/assets/f60051ac-855c-411b-83d4-cfdc8fdb2df4)
 
 Câu 2:
  
