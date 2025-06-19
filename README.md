@@ -1,3 +1,13 @@
+YÊU CẦU SỐ 7:
+
+
+
+![Screenshot 2025-06-19 161058](https://github.com/user-attachments/assets/9db6b1ee-24ed-4a26-9b37-204635cf664e)
+
+
+
+
+
 Câu 1 (1 điểm). Tiêu đề của bài tập lớn cuối kỳ (nhóm sinh viên) lựa chọn là gì ? 
 
 Tiêu đề: Hệ thống quản lý lớp học (Classroom Management System)
