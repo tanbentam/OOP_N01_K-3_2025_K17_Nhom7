@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Danh sách giáo viên</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <h2>Danh sách giáo viên</h2>
+    <a th:href="@{/teachers/add}">Thêm giáo viên</a>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Mã</th>
+                <th>Tên</th>
+                <th>Bộ môn</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="teacher, iterStat : ${teachers}">
+                <td th:text="${iterStat.count}"></td>
+                <td th:text="${teacher.id}"></td>
+                <td th:text="${teacher.name}"></td>
+                <td th:text="${teacher.subject}"></td>
+                <td>
+                    <a th:href="@{'/teachers/edit/' + ${teacher.id}}">Sửa</a> |
+                    <a th:href="@{'/teachers/delete/' + ${teacher.id}}"
+                       onclick="return confirm('Xóa giáo viên này?');">Xóa</a>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(teachers)}">
+                <td colspan="5">Không có dữ liệu</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
