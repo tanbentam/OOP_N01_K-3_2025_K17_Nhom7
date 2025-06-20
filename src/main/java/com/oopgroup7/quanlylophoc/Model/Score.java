@@ -1,29 +1,53 @@
 package com.oopgroup7.quanlylophoc.Model;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
 import java.io.Serializable;
+import java.util.UUID;
+
 
 public class Score implements Serializable {
-    private String StudentId; 
+    
+    @Id
+    @GeneratedValue
+
+    private UUID id; // Mã định danh duy nhất cho điểm số
+    private String studentId; 
     private String subject; 
     private double scoreValue; 
 
-    public Score( String StudentId, String subject, double scoreValue){
-        this.StudentId = StudentId;
+    public Score() {
+        // Default constructor for JPA
+    }
+
+
+    public Score(String studentId, String subject, double scoreValue){
+        this.studentId = studentId;
         this.subject = subject;
         this.scoreValue = scoreValue; 
     }
-    //get
-    public String getStudentId() {
-        return StudentId;
+    
+    public UUID getId() {
+        return id;
     }
-    public String getsubject() {
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public String getStudentId() {
+        return studentId;
+    }
+    public String getSubject() {
         return subject; 
     }
     public double getscoreValue() {
         return scoreValue; 
     }
     //set
-    public void setStudentId(String StudentId){
-        this.StudentId = StudentId;
+    public void setStudentId(String studentId){
+        this.studentId = studentId;
     }
     public void setsubject(String subject) {
         this.subject = subject; 
@@ -34,7 +58,7 @@ public class Score implements Serializable {
        @Override
     public String toString() {
         return "Score{" +
-                "studentId='" + StudentId + '\'' +
+                "studentId='" + studentId + '\'' +
                 ", subject='" + subject + '\'' +
                 ", scoreValue=" + scoreValue +
                 '}';
