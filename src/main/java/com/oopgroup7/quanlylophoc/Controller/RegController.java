@@ -28,10 +28,10 @@ public class ResController implements Serializable {
      * @return true if registration successful, false if student ID already exists
      */
     public boolean registerStudent(Student student) {
-        if (registeredStudents.containsKey(student.getId())) {
+        if (registeredStudents.containsKey(student.getId().toString())) {
             return false; // Student with this ID already exists
         }
-        registeredStudents.put(student.getId(), student);
+        registeredStudents.put(student.getId().toString(), student);
         return true;
     }
     
@@ -41,10 +41,10 @@ public class ResController implements Serializable {
      * @return true if registration successful, false if teacher ID already exists
      */
     public boolean registerTeacher(Teacher teacher) {
-        if (registeredTeachers.containsKey(teacher.getId())) {
+        if (registeredTeachers.containsKey(teacher.getId().toString())) {
             return false; // Teacher with this ID already exists
         }
-        registeredTeachers.put(teacher.getId(), teacher);
+        registeredTeachers.put(teacher.getId().toString(), teacher);
         return true;
     }
     
