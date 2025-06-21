@@ -12,12 +12,12 @@ import java.io.Serializable;
  * Register Controller (ResController) manages the registration of students and teachers
  * and provides functionality to add, remove, find, and manage registrations.
  */
-public class ResController implements Serializable {
+public class RegController implements Serializable {
     
     private Map<String, Student> registeredStudents;
     private Map<String, Teacher> registeredTeachers;
     
-    public ResController() {
+    public RegController() {
         this.registeredStudents = new HashMap<>();
         this.registeredTeachers = new HashMap<>();
     }
