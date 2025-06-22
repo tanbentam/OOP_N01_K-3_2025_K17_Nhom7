@@ -6,7 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import java.io.Serializable;
 import java.util.UUID;
 
-
+@Entity
 public class Score implements Serializable {
     
     @Id

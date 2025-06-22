@@ -11,6 +11,9 @@ import java.io.Serializable;
 @Entity
 public class Student implements Serializable {
 
+
+    @Id
+    @GeneratedValue
     private UUID id; // Mã định danh duy nhất cho học sinh
     
     private String name;
