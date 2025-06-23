@@ -43,4 +43,8 @@ public class TeacherService {
             return false;
         }
     }
+
+    public Teacher findByUsername(String username) {
+        return repo.findByUsername(username);
+    }
 }

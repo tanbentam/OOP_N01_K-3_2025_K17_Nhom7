@@ -19,6 +19,12 @@ public class Classroom implements Serializable {
     private Teacher teacher; // Lưu đối tượng Teacher
    
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinTable(
+    name = "classroom_student_list",
+    joinColumns = @JoinColumn(name = "classroom_id"),
+    inverseJoinColumns = @JoinColumn(name = "student_list_id"),
+    uniqueConstraints = @UniqueConstraint(columnNames = {"classroom_id", "student_list_id"})
+)
     private ArrayList<Student> studentList = new ArrayList<>(); // Lưu danh sách đối tượng Student
     public Classroom() {
         // Default constructor for JPA

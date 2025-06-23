@@ -1,17 +1,20 @@
 package com.oopgroup7.quanlylophoc.Model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.persistence.GeneratedValue;
 import java.io.Serializable;
 import java.util.UUID;
 
 @Entity
+@Table(name = "scores")
 public class Score implements Serializable {
     
     @Id
     @GeneratedValue
-
+    @Column(columnDefinition = "BINARY(16)")
     private UUID id; // Mã định danh duy nhất cho điểm số
     private String studentId; 
     private String subject; 

@@ -15,7 +15,8 @@ public class Teacher implements Serializable {
     private String name;
     private String subject;
     private String department;
-    
+    private String username; // Thêm trường username
+    private String password; // Thêm trường password
     
 
     public Teacher() {
@@ -61,6 +62,21 @@ public class Teacher implements Serializable {
         this.department = department;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
     // Display info
     /*public void printInfo() {
         System.out.println("Teacher ID: " + id);

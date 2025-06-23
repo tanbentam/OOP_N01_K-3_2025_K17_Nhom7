@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Optional;
@@ -61,4 +62,27 @@ public class StudentController {
         studentService.delete(id);
         return "redirect:/students";
     }
+/* 
+    @PostMapping("/add")
+    public String addStudent(@ModelAttribute Student student, RedirectAttributes redirectAttributes) {
+        try {
+            studentService.save(student);
+            redirectAttributes.addFlashAttribute("success", "Thêm học sinh thành công!");
+            return "redirect:/students";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Lỗi khi thêm học sinh: " + e.getMessage());
+        }
+        return "redirect:/students/add";
+    }
+
+    @PostMapping("/edit")
+    public String editStudent(@ModelAttribute Student student, RedirectAttributes redirectAttributes) {
+        try {
+            studentService.save(student);
+            redirectAttributes.addFlashAttribute("success", "Cập nhật học sinh thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Lỗi khi cập nhật học sinh: " + e.getMessage());
+        }
+        return "redirect:/students";
+    }*/
 }
