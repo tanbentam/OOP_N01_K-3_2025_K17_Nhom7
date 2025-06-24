@@ -1,34 +1,51 @@
 package com.oopgroup7.quanlylophoc.Model;
 
-import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
 public class Classroom implements Serializable {
 
     @Id
     @GeneratedValue
-    private UUID id; // Mã định danh duy nhất cho lớp học
-    private String className;
+    private UUID id;
+
+    private String className; // Tên lớp học, ví dụ: "10A1"
 
     @ManyToOne
-    private Teacher teacher; // Lưu đối tượng Teacher
-   
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinTable(
-    name = "classroom_student_list",
+    private Teacher teacher; // Giáo viên chủ nhiệm
+
+
+
+@ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+@JoinTable(
+    name = "classroom_student",
     joinColumns = @JoinColumn(name = "classroom_id"),
-    inverseJoinColumns = @JoinColumn(name = "student_list_id"),
-    uniqueConstraints = @UniqueConstraint(columnNames = {"classroom_id", "student_list_id"})
+    inverseJoinColumns = @JoinColumn(name = "student_id"),
+    uniqueConstraints = @UniqueConstraint(columnNames = {"classroom_id", "student_id"})
 )
-    private ArrayList<Student> studentList = new ArrayList<>(); // Lưu danh sách đối tượng Student
-    public Classroom() {
-        // Default constructor for JPA
-    }
+
+    private List<Student> studentList = new ArrayList<>();
+
+    // 👉 Mối quan hệ mới với thời khóa biểu
+    @OneToMany(mappedBy = "classroom", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Schedule> schedules = new ArrayList<>();
+
+    public Classroom() {}
+
     public Classroom(String className, Teacher teacher) {
         this.className = className;
         this.teacher = teacher;
@@ -42,23 +59,31 @@ public class Classroom implements Serializable {
         this.id = id;
     }
 
-    public void setClassName(String className) {
-        this.className = className;
-    }
-
     public String getClassName() {
         return className;
     }
 
-    public Teacher getTeacher() { // Trả về đối tượng Teacher
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
+    public Teacher getTeacher() {
         return teacher;
     }
 
-    public void setTeacher(Teacher teacher) { // Nhận đối tượng Teacher
+    public void setTeacher(Teacher teacher) {
         this.teacher = teacher;
     }
 
-    public void addStudent(Student student) { // Nhận đối tượng Student
+    public List<Student> getStudentList() {
+        return new ArrayList<>(studentList);
+    }
+
+    public void setStudentList(List<Student> studentList) {
+        this.studentList = new ArrayList<>(studentList);
+    }
+
+    public void addStudent(Student student) {
         studentList.add(student);
     }
 
@@ -66,13 +91,11 @@ public class Classroom implements Serializable {
         studentList.remove(student);
     }
 
-    public ArrayList<Student> getStudentList() {
-        return new ArrayList<>(studentList); // Trả về bản sao để bảo vệ dữ liệu
+    public List<Schedule> getSchedules() {
+        return schedules;
     }
 
-    public void setStudentList(ArrayList<Student> studentList) {
-        this.studentList = new ArrayList<>(studentList); // Bảo vệ dữ liệu bằng cách tạo bản sao
+    public void setSchedules(List<Schedule> schedules) {
+        this.schedules = schedules;
     }
-    
-    
 }

@@ -1,11 +1,23 @@
 package com.oopgroup7.quanlylophoc.Model;
 
-import jakarta.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.io.Serializable;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 
 @Entity
@@ -38,6 +50,9 @@ public class Student implements Serializable {
     uniqueConstraints = @UniqueConstraint(columnNames = {"student_id", "attendance_records_id"})
 )*/
     private List<AttendanceRecord> attendanceRecords = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "studentList")
+    private List<Classroom> classrooms = new ArrayList<>();
 
     public Student() {
         //Để hibernate tạo UUID

@@ -1,38 +1,125 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Danh sách lớp học</title>
     <meta charset="UTF-8">
+    <title>Danh sách lớp học</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 30px auto;
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .add-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 16px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            display: inline-block;
+            margin-bottom: 16px;
+        }
+
+        .add-button:hover {
+            opacity: 0.9;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        td a {
+            margin-right: 8px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        td a:hover {
+            text-decoration: underline;
+        }
+
+        .no-data {
+            text-align: center;
+            font-style: italic;
+            color: #999;
+            padding: 20px 0;
+        }
+    </style>
 </head>
 <body>
-    <h2>Danh sách lớp học</h2>
-    <a th:href="@{/classrooms/add}">Thêm lớp học</a>
-    <table border="1">
+<header>
+    <h1>📚 Danh sách lớp học</h1>
+</header>
+
+<main>
+    <a class="add-button" th:href="@{/classrooms/add}">➕ Thêm lớp học</a>
+
+    <table>
         <thead>
-            <tr>
-                <th>STT</th>
-                <th>Mã lớp</th>
-                <th>Tên lớp</th>
-                <th>Giáo viên chủ nhiệm</th>
-                <th>Thao tác</th>
-            </tr>
+        <tr>
+            <th>STT</th>
+            <th>Mã lớp</th>
+            <th>Tên lớp</th>
+            <th>Giáo viên chủ nhiệm</th>
+            <th>Sĩ số</th>
+            <th>Học sinh</th>
+            <th>Thao tác</th>
+        </tr>
         </thead>
         <tbody>
-            <tr th:each="classroom, iterStat : ${classrooms}">
-                <td th:text="${iterStat.count}"></td>
-                <td th:text="${classroom.id}"></td>
-                <td th:text="${classroom.className}"></td>
-                <td th:text="${classroom.teacher != null ? classroom.teacher.name : ''}"></td>
-                <td>
-                    <a th:href="@{'/classrooms/edit/' + ${classroom.id}}">Sửa</a> |
-                    <a th:href="@{'/classrooms/delete/' + ${classroom.id}}"
-                       onclick="return confirm('Xóa lớp học này?');">Xóa</a>
-                </td>
-            </tr>
-            <tr th:if="${#lists.isEmpty(classrooms)}">
-                <td colspan="5">Không có dữ liệu</td>
-            </tr>
+        <tr th:each="classroom, iterStat : ${classrooms}">
+            <td th:text="${iterStat.count}"></td>
+            <td th:text="${classroom.id}"></td>
+            <td th:text="${classroom.className}"></td>
+            <td th:text="${classroom.teacher != null ? classroom.teacher.name : 'Chưa phân công'}"></td>
+            <td th:text="${#lists.size(classroom.studentList)}"></td>
+            <td>
+                <a th:href="@{|/classrooms/${classroom.id}/student|}">📋 Xem</a>
+            </td>
+            <td>
+                <a th:href="@{'/classrooms/edit/' + ${classroom.id}}">✏️ Sửa</a>
+                <a th:href="@{'/classrooms/delete/' + ${classroom.id}}"
+                   onclick="return confirm('Xóa lớp học này?');">🗑️ Xóa</a>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(classrooms)}">
+            <td class="no-data" colspan="7">Không có lớp học nào.</td>
+        </tr>
         </tbody>
     </table>
+    <a class="back-button" th:href="${teacherCount}">⬅️ Quay lại trang chủ</a>
+</main>
 </body>
 </html>
+
