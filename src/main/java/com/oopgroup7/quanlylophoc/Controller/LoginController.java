@@ -62,9 +62,14 @@ public String processLogin(@RequestParam("username") String username,
         if (studentOpt.isPresent()) {
             Student student = studentOpt.get();
             // Kiểm tra password (nếu có) hoặc dùng name tạm thời
-            if ((student.getPassword() != null && student.getPassword().equals(password)) ||
-                (student.getPassword() == null && student.getName().equals(password))) {
+            boolean passwordMatch = false;
+            if ((student.getPassword() != null && !student.getPassword().isEmpty())) { //thêm mỗi dấu chấm than cũng là biên giới giữa đúng hay sai
+                passwordMatch = student.getPassword().equals(password);
+            } else {
+                passwordMatch = student.getName().equals(password);
+            }
                 
+            if (passwordMatch) {
                 session.setAttribute("currentUser", student);
                 session.setAttribute("currentUserRole", "student");
                 session.setAttribute("currentUserId", student.getId().toString());
@@ -98,7 +103,7 @@ public String processLogin(@RequestParam("username") String username,
     return "redirect:/login";
 }
 
-// ...existing code...
+
     // Đăng xuất
     @GetMapping("/logout")
     public String logout(HttpSession session, RedirectAttributes redirectAttributes) {

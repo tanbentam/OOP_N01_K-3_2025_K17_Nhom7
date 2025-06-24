@@ -70,9 +70,58 @@ public class RegController {
         return "register/teacher-form";
     }
     
-    /**
+    @PostMapping("/student")
+    public String registerStudent(@Valid @ModelAttribute Student student, 
+                              BindingResult result, 
+                              RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            return "register/student-form";
+        }
+    
+    try {
+        // Đảm bảo có username - nếu không có thì dùng studentCode hoặc tạo tự động
+        if (student.getUsername() == null || student.getUsername().trim().isEmpty()) {
+            if (student.getStudentCode() != null && !student.getStudentCode().trim().isEmpty()) {
+                student.setUsername(student.getStudentCode());
+            } else {
+                // Tạo username tự động từ tên
+                String username = student.getName().toLowerCase()
+                    .replaceAll("\\s+", "")
+                    .replaceAll("[^a-zA-Z0-9]", "");
+                student.setUsername(username + System.currentTimeMillis() % 1000);
+            }
+        }
+        
+        // Kiểm tra username trùng lặp
+        Optional<Student> existingStudent = studentService.findByUsername(student.getUsername());
+        if (existingStudent.isPresent()) {
+            result.rejectValue("username", "error.user", "Tên đăng nhập đã tồn tại");
+            return "register/student-form";
+        }
+
+        student.setId(null);
+        student.setVersion(null);
+        
+        Student savedStudent = studentService.saveNew(student);
+        logger.info("Đã đăng ký thành công học sinh: {} với username: {}", 
+                   savedStudent.getName(), savedStudent.getUsername());
+        
+        redirectAttributes.addFlashAttribute("success", 
+            "Đăng ký học sinh thành công! Username: " + savedStudent.getUsername() + 
+            ", Password: " + (savedStudent.getPassword() != null ? savedStudent.getPassword() : savedStudent.getName()));
+        
+        return "redirect:/login";
+    } catch (Exception e) {
+        logger.error("Lỗi khi đăng ký học sinh: {}", e.getMessage());
+        redirectAttributes.addFlashAttribute("error", "Đã xảy ra lỗi khi đăng ký: " + e.getMessage());
+        return "redirect:/register/student";
+    }
+}
+
+
+    /** PHIÊN BẢN CŨ 
      * Xử lý đăng ký học sinh
-     */
+     
     @PostMapping("/student")
     public String registerStudent(@Valid @ModelAttribute Student student, 
                                   BindingResult result, 
@@ -97,7 +146,7 @@ public class RegController {
             redirectAttributes.addFlashAttribute("error", "Đã xảy ra lỗi khi đăng ký: " + e.getMessage());
             return "redirect:/register/student";
         }
-    }
+    }*/
     
     /**
      * Xử lý đăng ký giáo viên

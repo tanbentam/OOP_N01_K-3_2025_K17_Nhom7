@@ -31,9 +31,25 @@ public class StudentService {
 
     // Các phương thức cơ bản
     @Transactional(readOnly = true)
-public Optional<Student> findByUsername(String username) {
-    return studentRepository.findByUsername(username);
-}
+    public Optional<Student> findByUsername(String username) {
+        if (username == null || username.trim().isEmpty()) {
+        return Optional.empty();
+    }
+    
+        try {
+        // Tìm theo username
+             List<Student> students = studentRepository.findAll();
+             Student student = students.stream()
+            .filter(s -> username.equals(s.getUsername()))
+            .findFirst()
+            .orElse(null);
+        
+            return Optional.ofNullable(student);
+         } catch (Exception e) {
+        System.err.println("Lỗi khi tìm kiếm học sinh theo username: " + e.getMessage());
+        return Optional.empty();
+        }
+    }
     
     @Transactional(readOnly = true)
     public List<Student> findAll() {
@@ -144,7 +160,9 @@ public Student saveNew(Student student) {
         newStudent.setEmail(student.getEmail());
         newStudent.setAddress(student.getAddress());
         newStudent.setDateOfBirth(student.getDateOfBirth());
-        
+        newStudent.setUsername(student.getUsername());
+        newStudent.setPassword(student.getPassword());
+
         // Thiết lập các trường bắt buộc
         newStudent.setId(null); // Để Hibernate tự tạo
         newStudent.setVersion(0L); // Version khởi tạo
@@ -218,8 +236,23 @@ public boolean delete(UUID id) {
     // Các phương thức tìm kiếm mới
     @Transactional(readOnly = true)
     public Optional<Student> findByStudentCode(String studentCode) {
-        return studentRepository.findByStudentCode(studentCode);
+    if (studentCode == null || studentCode.trim().isEmpty()) {
+        return Optional.empty();
     }
+    
+    try {
+        List<Student> students = studentRepository.findAll();
+        Student student = students.stream()
+            .filter(s -> studentCode.equals(s.getStudentCode()))
+            .findFirst()
+            .orElse(null);
+        
+        return Optional.ofNullable(student);
+    } catch (Exception e) {
+        System.err.println("Lỗi khi tìm kiếm học sinh theo mã: " + e.getMessage());
+        return Optional.empty();
+    }
+}
     
     @Transactional(readOnly = true)
     public List<Student> findByName(String name) {
