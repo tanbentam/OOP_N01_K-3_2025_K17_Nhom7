@@ -303,12 +303,6 @@ public List<Student> searchStudents(String name, String className, String studen
         }
     }
     
-<<<<<<< HEAD
-    public Student findByUsername(String username) {
-        return studentRepository.findByUsername(username);
-    }
-}
-=======
     @Transactional(readOnly = true)
     public List<Classroom> getClassroomsOfStudent(UUID studentId) {
         Optional<Student> studentOpt = studentRepository.findById(studentId);
@@ -321,4 +315,3 @@ public List<Student> searchStudents(String name, String className, String studen
         return List.of();
     }
 }
->>>>>>> nhanhhai2
