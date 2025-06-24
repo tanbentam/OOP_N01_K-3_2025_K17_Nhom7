@@ -45,19 +45,20 @@ public class Score implements Serializable {
     public String getSubject() {
         return subject; 
     }
-    public double getscoreValue() {
-        return scoreValue; 
-    }
+    public double getScoreValue() {  // Đổi từ getscoreValue thành getScoreValue
+    return scoreValue; 
+}
     //set
     public void setStudentId(String studentId){
         this.studentId = studentId;
     }
-    public void setsubject(String subject) {
+    public void setSubject(String subject) {
         this.subject = subject; 
     }
-    public void setscoreValue(double scoreValue) {
-        this.scoreValue = scoreValue; 
-    }
+    public void setScoreValue(double scoreValue) {  // Đổi từ setscoreValue thành setScoreValue
+    this.scoreValue = scoreValue; 
+}
+
        @Override
     public String toString() {
         return "Score{" +

@@ -2,6 +2,7 @@ package com.oopgroup7.quanlylophoc.Service;
 
 import com.oopgroup7.quanlylophoc.Model.AttendanceRecord;
 import com.oopgroup7.quanlylophoc.Model.Classroom;
+import com.oopgroup7.quanlylophoc.Model.ClassroomStudent;
 import com.oopgroup7.quanlylophoc.Model.Student;
 import com.oopgroup7.quanlylophoc.Repository.AttendanceRepository;
 import com.oopgroup7.quanlylophoc.Repository.ClassroomRepository;
@@ -30,11 +31,15 @@ public class AttendanceService {
         return names;
     }
 
-    public List<Student> getPresentStudents(String className, LocalDate date) {
-    Classroom classroom = classroomRepository.findByClassNameIgnoreCase(className);
+
+
+public List<Student> getPresentStudents(String className, LocalDate date) {
+    Optional<Classroom> classroomOpt = classroomRepository.findByClassNameIgnoreCase(className);
     List<Student> present = new ArrayList<>();
-    if (classroom != null) {
-        for (Student s : classroom.getStudentList()) {
+    if (classroomOpt.isPresent()) {
+        Classroom classroom = classroomOpt.get();
+        for (ClassroomStudent cs : classroom.getClassroomStudents()) {
+            Student s = cs.getStudent();
             if (s.isPresentOnDate(date)) {
                 present.add(s);
             }
@@ -44,10 +49,12 @@ public class AttendanceService {
 }
 
 public List<Student> getAbsentStudents(String className, LocalDate date) {
-    Classroom classroom = classroomRepository.findByClassNameIgnoreCase(className);
+    Optional<Classroom> classroomOpt = classroomRepository.findByClassNameIgnoreCase(className);
     List<Student> absent = new ArrayList<>();
-    if (classroom != null) {
-        for (Student s : classroom.getStudentList()) {
+    if (classroomOpt.isPresent()) {
+        Classroom classroom = classroomOpt.get();
+        for (ClassroomStudent cs : classroom.getClassroomStudents()) {
+            Student s = cs.getStudent();
             if (!s.isPresentOnDate(date)) {
                 absent.add(s);
             }
@@ -55,6 +62,9 @@ public List<Student> getAbsentStudents(String className, LocalDate date) {
     }
     return absent;
 }
+
+
+// ...existing code...
     public AttendanceService(AttendanceRepository repo) {
         this.repo = repo;
     }

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
+import java.util.Optional;
 import java.util.List;
 
 @Controller
@@ -36,65 +36,69 @@ public class LoginController {
     }
     
     // Xử lý đăng nhập
-    @PostMapping("/login")
-    public String processLogin(@RequestParam("username") String username,
-                               @RequestParam("password") String password,
-                               @RequestParam("role") String role,
-                               HttpSession session,
-                               RedirectAttributes redirectAttributes) {
-        
-        boolean authenticated = false;
-        
-        // Kiểm tra admin đặc biệt
-        if ("admin".equals(username) && "admin123".equals(password) && "teacher".equals(role)) {
-            session.setAttribute("currentUser", "Administrator");
-            session.setAttribute("currentUserRole", "admin");
-            session.setAttribute("currentUserId", "admin");
-            session.setAttribute("currentUserName", "Administrator"); //vừa sửa 5:46PM 23/6/25
-            return "redirect:/admin/dashboard";
-        }
-        
-        if ("student".equals(role)) {
-            // Xác thực học sinh bằng username và password
-            Student student = studentService.findByUsername(username);
-            if (student != null) {
-                // Kiểm tra password (nếu có) hoặc dùng name tạm thời
-                if ((student.getPassword() != null && student.getPassword().equals(password)) ||
-                    (student.getPassword() == null && student.getName().equals(password))) {
-                    
-                    session.setAttribute("currentUser", student);
-                    session.setAttribute("currentUserRole", "student");
-                    session.setAttribute("currentUserId", student.getId().toString());
-                    session.setAttribute("currentUserName", student.getName());
-                    authenticated = true;
-                    return "redirect:/student/dashboard";
-                }
-            }
-        } else if ("teacher".equals(role)) {
-            // Xác thực giáo viên bằng username và password
-            Teacher teacher = teacherService.findByUsername(username);
-            if (teacher != null) {
-                // Kiểm tra password (nếu có) hoặc dùng name tạm thời
-                if ((teacher.getPassword() != null && teacher.getPassword().equals(password))) {
-                    
-                    session.setAttribute("currentUser", teacher);
-                    session.setAttribute("currentUserRole", "teacher");
-                    session.setAttribute("currentUserId", teacher.getId().toString());
-                    session.setAttribute("currentUserName", teacher.getName());
-                    authenticated = true;
-                    return "redirect:/teacher/dashboard";
-                }
+    // ...existing code...
+
+@PostMapping("/login")
+public String processLogin(@RequestParam("username") String username,
+                           @RequestParam("password") String password,
+                           @RequestParam("role") String role,
+                           HttpSession session,
+                           RedirectAttributes redirectAttributes) {
+    
+    boolean authenticated = false;
+    
+    // Kiểm tra admin đặc biệt
+    if ("admin".equals(username) && "admin123".equals(password) && "teacher".equals(role)) {
+        session.setAttribute("currentUser", "Administrator");
+        session.setAttribute("currentUserRole", "admin");
+        session.setAttribute("currentUserId", "admin");
+        session.setAttribute("currentUserName", "Administrator");
+        return "redirect:/admin/dashboard";
+    }
+    
+    if ("student".equals(role)) {
+        // **SỬA ĐỔI: Sử dụng Optional<Student>**
+        Optional<Student> studentOpt = studentService.findByUsername(username);
+        if (studentOpt.isPresent()) {
+            Student student = studentOpt.get();
+            // Kiểm tra password (nếu có) hoặc dùng name tạm thời
+            if ((student.getPassword() != null && student.getPassword().equals(password)) ||
+                (student.getPassword() == null && student.getName().equals(password))) {
+                
+                session.setAttribute("currentUser", student);
+                session.setAttribute("currentUserRole", "student");
+                session.setAttribute("currentUserId", student.getId().toString());
+                session.setAttribute("currentUserName", student.getName());
+                authenticated = true;
+                return "redirect:/student/dashboard";
             }
         }
-        
-        if (!authenticated) {
-            redirectAttributes.addFlashAttribute("error", "Tên đăng nhập hoặc mật khẩu không đúng");
-            return "redirect:/login";
+    } else if ("teacher".equals(role)) {
+        // **TƯƠNG TỰ CHO TEACHER NẾU CẦN**
+        Teacher teacher = teacherService.findByUsername(username);
+        if (teacher != null) {
+            // Kiểm tra password (nếu có) hoặc dùng name tạm thời
+            if ((teacher.getPassword() != null && teacher.getPassword().equals(password))) {
+                
+                session.setAttribute("currentUser", teacher);
+                session.setAttribute("currentUserRole", "teacher");
+                session.setAttribute("currentUserId", teacher.getId().toString());
+                session.setAttribute("currentUserName", teacher.getName());
+                authenticated = true;
+                return "redirect:/teacher/dashboard";
+            }
         }
-        
+    }
+    
+    if (!authenticated) {
+        redirectAttributes.addFlashAttribute("error", "Tên đăng nhập hoặc mật khẩu không đúng");
         return "redirect:/login";
     }
     
+    return "redirect:/login";
+}
+
+// ...existing code...
     // Đăng xuất
     @GetMapping("/logout")
     public String logout(HttpSession session, RedirectAttributes redirectAttributes) {

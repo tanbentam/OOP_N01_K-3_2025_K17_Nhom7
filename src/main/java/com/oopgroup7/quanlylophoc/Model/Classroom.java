@@ -6,34 +6,39 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-
 @Entity
+@Table(name = "classroom")
 public class Classroom implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     @Id
-    @GeneratedValue
-    private UUID id; // Mã định danh duy nhất cho lớp học
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", columnDefinition = "BINARY(16)")
+    private UUID id;
+
+    @Column(name = "class_name")
     private String className;
 
-    @ManyToOne
-    private Teacher teacher; // Lưu đối tượng Teacher
-   
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinTable(
-    name = "classroom_student_list",
-    joinColumns = @JoinColumn(name = "classroom_id"),
-    inverseJoinColumns = @JoinColumn(name = "student_list_id"),
-    uniqueConstraints = @UniqueConstraint(columnNames = {"classroom_id", "student_list_id"})
-)
-    private ArrayList<Student> studentList = new ArrayList<>(); // Lưu danh sách đối tượng Student
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "teacher_id")
+    private Teacher teacher;
+
+    @OneToMany(mappedBy = "classroom")
+    private List<ClassroomStudent> classroomStudents = new ArrayList<>();
+
+    // Constructor mặc định
     public Classroom() {
-        // Default constructor for JPA
+        // Hibernate sẽ tự sinh id
     }
+
+    // Constructor có tham số
     public Classroom(String className, Teacher teacher) {
         this.className = className;
         this.teacher = teacher;
     }
 
+    // Getter và setter
     public UUID getId() {
         return id;
     }
@@ -42,37 +47,41 @@ public class Classroom implements Serializable {
         this.id = id;
     }
 
-    public void setClassName(String className) {
-        this.className = className;
-    }
-
     public String getClassName() {
         return className;
     }
 
-    public Teacher getTeacher() { // Trả về đối tượng Teacher
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
+    public Teacher getTeacher() {
         return teacher;
     }
 
-    public void setTeacher(Teacher teacher) { // Nhận đối tượng Teacher
+    public void setTeacher(Teacher teacher) {
         this.teacher = teacher;
     }
 
-    public void addStudent(Student student) { // Nhận đối tượng Student
-        studentList.add(student);
+    public List<ClassroomStudent> getClassroomStudents() {
+        return classroomStudents;
     }
 
-    public void removeStudent(Student student) {
-        studentList.remove(student);
+    public void setClassroomStudents(List<ClassroomStudent> classroomStudents) {
+        this.classroomStudents = classroomStudents;
     }
 
-    public ArrayList<Student> getStudentList() {
-        return new ArrayList<>(studentList); // Trả về bản sao để bảo vệ dữ liệu
+    // equals và hashCode
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Classroom classroom = (Classroom) o;
+        return id != null && id.equals(classroom.getId());
     }
 
-    public void setStudentList(ArrayList<Student> studentList) {
-        this.studentList = new ArrayList<>(studentList); // Bảo vệ dữ liệu bằng cách tạo bản sao
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
-    
-    
 }

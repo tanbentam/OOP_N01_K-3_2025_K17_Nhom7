@@ -1,29 +1,46 @@
 package com.oopgroup7.quanlylophoc.Service;
 
 import com.oopgroup7.quanlylophoc.Model.Classroom;
+import com.oopgroup7.quanlylophoc.Model.Student;
+import com.oopgroup7.quanlylophoc.Model.ClassroomStudent;
+import com.oopgroup7.quanlylophoc.Model.ClassroomStudentId;
 import com.oopgroup7.quanlylophoc.Repository.ClassroomRepository;
+import com.oopgroup7.quanlylophoc.Repository.StudentRepository;
+import com.oopgroup7.quanlylophoc.Repository.ClassroomStudentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@Transactional
 public class ClassroomService {
     private final ClassroomRepository repo;
+    
+    @Autowired
+    private StudentRepository studentRepository;
+    
+    @Autowired
+    private ClassroomStudentRepository classroomStudentRepository;
 
     public ClassroomService(ClassroomRepository repo) {
         this.repo = repo;
     }
 
+    @Transactional(readOnly = true)
     public List<Classroom> findAll() {
         return repo.findAll();
     }
 
+    @Transactional(readOnly = true)
     public Optional<Classroom> findById(UUID id) {
         return repo.findById(id);
     }
 
+    @Transactional
     public boolean save(Classroom classroom) {
         try {
             repo.save(classroom);
@@ -34,6 +51,7 @@ public class ClassroomService {
         }
     }
 
+    @Transactional
     public boolean delete(UUID id) {
         try {
             repo.deleteById(id);
@@ -42,5 +60,70 @@ public class ClassroomService {
             System.err.println("Error Deleting Classroom: " + e.getMessage());
             return false;
         }
+    }
+    
+    // Thêm các method để xử lý quan hệ với Student
+    @Transactional(readOnly = true)
+    public List<Student> getStudentsInClassroom(UUID classroomId) {
+        Optional<Classroom> classroomOpt = repo.findById(classroomId);
+        if (classroomOpt.isPresent()) {
+            return classroomOpt.get().getClassroomStudents()
+                .stream()
+                .map(ClassroomStudent::getStudent)
+                .toList();
+        }
+        return List.of();
+    }
+    
+    @Transactional
+    public boolean addStudentToClassroom(UUID classroomId, UUID studentId) {
+        try {
+            Optional<Classroom> classroomOpt = repo.findById(classroomId);
+            Optional<Student> studentOpt = studentRepository.findById(studentId);
+            
+            if (classroomOpt.isPresent() && studentOpt.isPresent()) {
+                Classroom classroom = classroomOpt.get();
+                Student student = studentOpt.get();
+                
+                ClassroomStudent cs = new ClassroomStudent();
+                cs.setClassroom(classroom);
+                cs.setStudent(student);
+                
+                ClassroomStudentId id = new ClassroomStudentId();
+                id.setClassroomId(classroomId);
+                id.setStudentId(studentId);
+                cs.setId(id);
+                
+                classroomStudentRepository.save(cs);
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            System.err.println("Error adding student to classroom: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    @Transactional
+    public boolean removeStudentFromClassroom(UUID classroomId, UUID studentId) {
+        try {
+            ClassroomStudentId id = new ClassroomStudentId();
+            id.setClassroomId(classroomId);
+            id.setStudentId(studentId);
+            
+            if (classroomStudentRepository.existsById(id)) {
+                classroomStudentRepository.deleteById(id);
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            System.err.println("Error removing student from classroom: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    @Transactional(readOnly = true)
+    public Optional<Classroom> findByClassName(String className) {
+        return repo.findByClassNameIgnoreCase(className);
     }
 }
