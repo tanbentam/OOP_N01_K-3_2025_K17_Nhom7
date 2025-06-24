@@ -40,9 +40,9 @@ public class StudentService {
         // Tìm theo username
              List<Student> students = studentRepository.findAll();
              Student student = students.stream()
-            .filter(s -> username.equals(s.getUsername()))
-            .findFirst()
-            .orElse(null);
+                .filter(s -> username.equals(s.getUsername()))
+                .findFirst()
+                .orElse(null);
         
             return Optional.ofNullable(student);
          } catch (Exception e) {

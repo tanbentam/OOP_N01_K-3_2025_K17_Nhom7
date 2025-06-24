@@ -2,6 +2,7 @@ package com.oopgroup7.quanlylophoc.Controller;
 
 import com.oopgroup7.quanlylophoc.Model.Score;
 import com.oopgroup7.quanlylophoc.Service.ScoreService;
+import com.oopgroup7.quanlylophoc.Service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,20 +18,24 @@ public class ScoreController {
 
     @Autowired
     private ScoreService scoreService;
+    
+    @Autowired
+    private StudentService studentService;
 
     // Hiển thị danh sách điểm
     @GetMapping
     public String listScores(Model model) {
         List<Score> scores = scoreService.findAll();
         model.addAttribute("scores", scores);
-        return "score/index";
+        return "Score/index";
     }
 
     // Hiển thị form thêm điểm
     @GetMapping("/add")
     public String showAddForm(Model model) {
         model.addAttribute("score", new Score());
-        return "score/form";
+        model.addAttribute("students", studentService.findAll());
+        return "Score/form";
     }
 
     // Xử lý thêm điểm
@@ -44,8 +49,12 @@ public class ScoreController {
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable UUID id, Model model) {
         Optional<Score> score = scoreService.findById(id);
-        score.ifPresent(value -> model.addAttribute("score", value));
-        return "score/form";
+        if (score.isPresent()) {
+            model.addAttribute("score", score.get());
+            model.addAttribute("students", studentService.findAll());
+            return "Score/form";
+        }
+        return "redirect:/scores";
     }
 
     // Xử lý sửa điểm
@@ -55,7 +64,7 @@ public class ScoreController {
         return "redirect:/scores";
     }
 
-    // Xóa điểm
+    // Xoá điểm
     @GetMapping("/delete/{id}")
     public String deleteScore(@PathVariable UUID id) {
         scoreService.delete(id);

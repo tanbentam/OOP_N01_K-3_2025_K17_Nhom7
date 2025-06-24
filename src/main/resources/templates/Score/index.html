@@ -12,7 +12,7 @@
             <tr>
                 <th>STT</th>
                 <th>Mã điểm</th>
-                <th>Mã học sinh</th>
+                <th>Học sinh</th>
                 <th>Môn học</th>
                 <th>Điểm</th>
                 <th>Thao tác</th>
@@ -22,7 +22,8 @@
             <tr th:each="score, iterStat : ${scores}">
                 <td th:text="${iterStat.count}"></td>
                 <td th:text="${score.id}"></td>
-                <td th:text="${score.studentId}"></td>
+                <!-- Display student name if available, or just ID if not -->
+                <td th:text="${score.student != null ? score.student.name : score.studentId}"></td>
                 <td th:text="${score.subject}"></td>
                 <td th:text="${score.scoreValue}"></td>
                 <td>
@@ -36,5 +37,6 @@
             </tr>
         </tbody>
     </table>
+    <a th:href="@{/}">Quay lại trang chủ</a>
 </body>
 </html>

@@ -8,8 +8,16 @@
     <h2 th:text="${score.id == null ? 'Thêm điểm' : 'Sửa điểm'}"></h2>
     <form th:action="@{${score.id == null} ? '/scores/add' : '/scores/edit'}" th:object="${score}" method="post">
         <input type="hidden" th:field="*{id}" />
-        <label>Mã học sinh:</label>
-        <input type="text" th:field="*{studentId}" required/><br>
+        
+        <!-- Dropdown để chọn học sinh thay vì nhập ID -->
+        <label>Học sinh:</label>
+        <select th:field="*{studentId}" required>
+            <option value="">-- Chọn học sinh --</option>
+            <option th:each="student : ${students}" 
+                    th:value="${student.id}" 
+                    th:text="${student.name}"></option>
+        </select><br>
+        
         <label>Môn học:</label>
         <input type="text" th:field="*{subject}" required/><br>
         <label>Điểm:</label>

@@ -99,6 +99,25 @@ public class RegController {
             return "register/student-form";
         }
 
+        // Đặt password mặc định nếu không có
+        if (student.getPassword() == null || student.getPassword().trim().isEmpty()) {
+            String password = student.getName()
+                .replaceAll("\\s+", "")
+                .replaceAll("[àáạảãâầấậẩẫăằắặẳẵ]", "a")
+                .replaceAll("[èéẹẻẽêềếệểễ]", "e")
+                .replaceAll("[ìíịỉĩ]", "i")
+                .replaceAll("[òóọỏõôồốộổỗơờớợởỡ]", "o")
+                .replaceAll("[ùúụủũưừứựửữ]", "u")
+                .replaceAll("[ỳýỵỷỹ]", "y")
+                .replaceAll("[đ]", "d")
+                .toLowerCase();
+
+            if (password.length() < 3) {
+                password = password + "123"; // Thêm số để đảm bảo đủ độ dài
+            }
+            student.setPassword(password);
+        }
+
         student.setId(null);
         student.setVersion(null);
         

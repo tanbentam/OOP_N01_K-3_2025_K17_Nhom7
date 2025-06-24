@@ -36,7 +36,6 @@ public class LoginController {
     }
     
     // Xử lý đăng nhập
-    // ...existing code...
 
 @PostMapping("/login")
 public String processLogin(@RequestParam("username") String username,
