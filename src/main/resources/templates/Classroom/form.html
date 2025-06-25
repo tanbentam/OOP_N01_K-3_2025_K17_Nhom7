@@ -20,7 +20,7 @@
         }
 
         main {
-            max-width: 600px;
+            max-width: 700px;
             margin: 30px auto;
             background: white;
             padding: 24px;
@@ -53,7 +53,9 @@
         }
 
         select[multiple] {
-            height: 150px;
+            height: 160px;
+            background-color: #fafafa;
+            overflow-y: auto;
         }
 
         .form-actions {
@@ -86,6 +88,33 @@
         .form-actions a:hover {
             opacity: 0.9;
         }
+
+        .selected-students {
+            margin-top: 20px;
+            padding: 16px;
+            background-color: #f8f9fb;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .selected-students ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 10px;
+        }
+
+        .selected-students li {
+            padding: 6px 12px;
+            margin-bottom: 6px;
+            background-color: #eef1f7;
+            border-radius: 6px;
+        }
+
+        .no-students {
+            color: #999;
+            font-style: italic;
+            margin-top: 6px;
+        }
     </style>
 </head>
 <body>
@@ -109,17 +138,27 @@
             <option value="">-- Chọn giáo viên --</option>
             <option th:each="t : ${teacher}"
                     th:value="${t.id}"
-                    th:text="${t.name}">
-            </option>
+                    th:text="${t.name}"></option>
         </select>
 
-        <label for="students">Danh sách học sinh:</label>
-        <select id="students" th:field="*{studentList}" multiple>
+        <label for="student">Danh sách học sinh:</label>
+        <select id="student" th:field="*{studentList}" multiple>
             <option th:each="s : ${student}"
                     th:value="${s.id}"
-                    th:text="${s.name}">
-            </option>
+                    th:text="${s.name}"></option>
         </select>
+
+        <div class="selected-students">
+            <strong style="color: #4a4a4a; font-size: 18px;">✅ Học sinh đã chọn:</strong>
+            <ul>
+                <li th:each="s : ${classroom.studentList}"
+                    th:text="${s.name} + ' (' + ${s.age} + ' tuổi)'">
+                </li>
+                <li th:if="${#lists.isEmpty(classroom.studentList)}" class="no-students">
+                    Chưa có học sinh nào được chọn.
+                </li>
+            </ul>
+        </div>
 
         <div class="form-actions">
             <button type="submit">💾 Lưu</button>

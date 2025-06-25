@@ -34,6 +34,36 @@
             margin-bottom: 20px;
         }
 
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            font-size: 15px;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 500;
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-back {
+            background-color: #ccc;
+            color: black;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -54,20 +84,6 @@
             background-color: #f9f9f9;
         }
 
-        .back-button {
-            display: inline-block;
-            padding: 10px 16px;
-            background: #ccc;
-            color: black;
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: 500;
-        }
-
-        .back-button:hover {
-            background-color: #bbb;
-        }
-
         .no-data {
             text-align: center;
             font-style: italic;
@@ -83,6 +99,11 @@
 
 <main>
     <h2 th:text="'Lớp: ' + ${classroom.className}"></h2>
+
+    <div class="actions">
+        <a class="btn btn-add" th:href="@{/classrooms/{id}/add-student(id=${classroom.id})}">➕ Thêm học sinh</a>
+        <a class="btn btn-back" th:href="@{/classrooms}">⬅️ Quay lại danh sách lớp</a>
+    </div>
 
     <table>
         <thead>
@@ -103,8 +124,6 @@
             </tr>
         </tbody>
     </table>
-
-    <a class="back-button" th:href="@{/classrooms}">⬅️ Quay lại danh sách lớp</a>
 </main>
 </body>
 </html>

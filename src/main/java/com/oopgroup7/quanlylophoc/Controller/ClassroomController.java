@@ -1,8 +1,10 @@
 package com.oopgroup7.quanlylophoc.Controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.oopgroup7.quanlylophoc.Model.Classroom;
+import com.oopgroup7.quanlylophoc.Model.Student;
 import com.oopgroup7.quanlylophoc.Service.ClassroomService;
 import com.oopgroup7.quanlylophoc.Service.StudentService;
 import com.oopgroup7.quanlylophoc.Service.TeacherService;
@@ -56,6 +59,18 @@ public class ClassroomController {
         }
     }
 
+@GetMapping("/{id}/add-student")
+public String showAddStudentForm(@PathVariable UUID id, Model model) {
+    Optional<Classroom> classroom = classroomService.findById(id);
+    if (classroom.isEmpty()) {
+        return "redirect:/classrooms";
+    }
+
+    model.addAttribute("classroom", classroom.get());
+    model.addAttribute("teacher", teacherService.findAll());
+    model.addAttribute("student", studentService.findAll());
+    return "classroom/form"; // hoặc một form riêng nếu bạn muốn tách
+}
 
     // Hiển thị form thêm lớp học
     @GetMapping("/add")
@@ -90,7 +105,29 @@ public class ClassroomController {
     // Xử lý sửa lớp học
     @PostMapping("/edit")
     public String editClassroom(@ModelAttribute Classroom classroom) {
-        classroomService.save(classroom);
+        //classroomService.save(classroom);
+
+    Optional<Classroom> existingOpt = classroomService.findById(classroom.getId());
+
+    if (existingOpt.isPresent()) {
+        Classroom existing = existingOpt.get();
+
+        // Cập nhật tên lớp và giáo viên
+        existing.setClassName(classroom.getClassName());
+        existing.setTeacher(classroom.getTeacher());
+
+        // Gộp học sinh cũ + học sinh vừa được chọn (tránh mất học sinh cũ)
+        List<Student> updatedList = new ArrayList<>(existing.getStudentList());
+        updatedList.addAll(
+            classroom.getStudentList().stream()
+                .filter(s -> !updatedList.contains(s))
+                .collect(Collectors.toList())
+        );
+        existing.setStudentList(updatedList);
+
+        classroomService.save(existing);
+    }
+
         return "redirect:/classrooms";
     }
 
