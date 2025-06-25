@@ -13,19 +13,21 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Repository  // THÊM ANNOTATION NÀY
+@Repository 
 public interface StudentRepository extends JpaRepository<Student, UUID> {
     
-    // Tìm học sinh theo username (nếu có chức năng đăng nhập)
+    // Tìm học sinh theo username 
     Optional<Student> findByUsername(String username);
     
-    // Tìm học sinh theo mã học sinh (studentCode)
+    // Tìm học sinh theo mã học sinh 
     Optional<Student> findByStudentCode(String studentCode);
-    
-    // Kiểm tra mã học sinh đã tồn tại chưa (loại trừ học sinh với id đã cho)
-    @Query("SELECT COUNT(s) > 0 FROM Student s WHERE s.studentCode = :studentCode AND (:id IS NULL OR s.id <> :id)")
-    boolean existsByStudentCodeAndIdNot(@Param("studentCode") String studentCode, @Param("id") UUID id);
-    
+
+    List<Student> findByEmail(String email);
+
+    // Kiểm tra mã học sinh đã tồn tại chưa
+    @Query("SELECT COUNT(s) > 0 FROM Student s WHERE s.studentCode = :studentCode")
+    boolean existsByStudentCode(@Param("studentCode") String studentCode);
+
     // Tìm học sinh theo tên - không phân biệt hoa thường
     @Query("SELECT s FROM Student s WHERE LOWER(s.name) LIKE LOWER(CONCAT('%', :name, '%'))")
     List<Student> findByNameContainingIgnoreCase(@Param("name") String name);
@@ -33,17 +35,16 @@ public interface StudentRepository extends JpaRepository<Student, UUID> {
     // Tìm học sinh theo lớp
     @Query("SELECT s FROM Student s WHERE s.className = :className")
     List<Student> findByClassName(@Param("className") String className);
-    
-    // Tìm học sinh theo số điện thoại
-    Optional<Student> findByPhoneNumber(String phoneNumber);
-    
-    // THÊM METHOD XÓA AN TOÀN
+
+    // Tìm học sinh theo mã học sinh và lớp
+    @Query("SELECT s FROM Student s WHERE s.studentCode = :studentCode AND s.className = :className")
+    List<Student> findByStudentCodeAndClassName(@Param("studentCode") String studentCode, @Param("className") String className);
+
     @Modifying
     @Transactional
     @Query("DELETE FROM Student s WHERE s.id = :id")
     void deleteStudentById(@Param("id") UUID id);
     
-    // THÊM METHOD KIỂM TRA QUAN HỆ
     @Query("SELECT COUNT(cs) FROM ClassroomStudent cs WHERE cs.student.id = :studentId")
     Long countClassroomRelationships(@Param("studentId") UUID studentId);
     
@@ -85,10 +86,7 @@ public interface StudentRepository extends JpaRepository<Student, UUID> {
     
     // Tìm học sinh theo lớp và sắp xếp theo tên
     List<Student> findByClassNameOrderByNameAsc(String className);
-    
-    // Tìm học sinh theo độ tuổi
-    List<Student> findByAgeBetween(int minAge, int maxAge);
-    
+
     // Tìm học sinh theo tên và lớp
     @Query("SELECT s FROM Student s WHERE " +
            "LOWER(s.name) LIKE LOWER(CONCAT('%', :name, '%')) AND " +
@@ -101,23 +99,24 @@ public interface StudentRepository extends JpaRepository<Student, UUID> {
     List<Student> findByGender(String gender);
     
     // Tìm kiếm theo email
-    @Query("SELECT s FROM Student s WHERE LOWER(s.email) LIKE LOWER(CONCAT('%', :email, '%'))")
+    @Query("SELECT s FROM Student s WHERE " +
+       "(:email IS NULL OR :email = '' OR LOWER(TRIM(s.email)) LIKE LOWER(CONCAT('%', TRIM(:email), '%')))")
     List<Student> findByEmailContaining(@Param("email") String email);
-    
+
     // Lấy học sinh với version hiện tại
     @Query("SELECT s FROM Student s WHERE s.id = :id")
     Optional<Student> findWithCurrentVersion(@Param("id") UUID id);
     
     // Lấy danh sách các lớp học duy nhất
     @Query("SELECT DISTINCT s.className FROM Student s WHERE s.className IS NOT NULL AND s.className <> '' ORDER BY s.className")
-List<String> findDistinctClassNames();
+  List<String> findDistinctClassNames();
 
-// Kiểm tra học sinh với version cụ thể
-@Query("SELECT COUNT(s) > 0 FROM Student s WHERE s.id = :id AND s.version = :version")
-boolean existsByIdAndVersion(@Param("id") UUID id, @Param("version") Long version);
+ // Kiểm tra học sinh với version cụ thể
+   @Query("SELECT COUNT(s) > 0 FROM Student s WHERE s.id = :id AND s.version = :version")
+   boolean existsByIdAndVersion(@Param("id") UUID id, @Param("version") Long version);
 
-// THÊM METHOD HỖ TRỢ XÓA
-@Query("SELECT s FROM Student s LEFT JOIN FETCH s.classroomStudents WHERE s.id = :id")
-Optional<Student> findByIdWithRelations(@Param("id") UUID id);
+ // THÊM METHOD HỖ TRỢ XÓA
+  @Query("SELECT s FROM Student s LEFT JOIN FETCH s.classroomStudents WHERE s.id = :id")
+   Optional<Student> findByIdWithRelations(@Param("id") UUID id);
 
 }
