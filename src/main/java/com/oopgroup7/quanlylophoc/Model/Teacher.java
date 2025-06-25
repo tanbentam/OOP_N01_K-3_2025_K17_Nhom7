@@ -2,9 +2,10 @@ package com.oopgroup7.quanlylophoc.Model;
 
 import java.io.Serializable;
 import java.util.UUID;
+
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 
 @Entity
 public class Teacher implements Serializable {

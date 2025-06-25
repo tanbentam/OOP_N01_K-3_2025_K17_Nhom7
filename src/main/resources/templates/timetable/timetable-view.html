@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thời khóa biểu</title>
+    <style>
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #999; padding: 8px; text-align: center; }
+        th { background-color: #4CAF50; color: white; }
+    </style>
+</head>
+<body>
+    <h2 th:text="'Thời khóa biểu lớp ' + ${classEntity.name}"></h2>
+    <table>
+        <tr>
+            <th>Tiết/Thứ</th>
+            <th>Thứ 2</th>
+            <th>Thứ 3</th>
+            <th>Thứ 4</th>
+            <th>Thứ 5</th>
+            <th>Thứ 6</th>
+            <th>Thứ 7</th>
+        </tr>
+        <tr th:each="i : ${#numbers.sequence(1, 5)}">
+            <td th:text="'Tiết ' + i"></td>
+            <td th:each="d : ${#arrays.asList('Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7')}"
+                th:with="sub=${schedules.stream().filter(s -> s.lesson == i && s.dayOfWeek.equals(d)).findFirst().orElse(null)}"
+                th:text="${sub != null ? sub.subject : '-'}"></td>
+        </tr>
+    </table>
+    <a th:href="@{/timetable}">← Quay lại danh sách lớp</a>
+</body>
+</html>

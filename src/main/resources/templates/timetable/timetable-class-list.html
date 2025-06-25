@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách lớp</title>
+</head>
+<body>
+    <h2>Chọn lớp để xem thời khóa biểu</h2>
+    <ul>
+        <li th:each="cls : ${classes}">
+            <a th:href="@{/timetable/{id}(id=${cls.id})}" th:text="${cls.className}"></a>
+        </li>
+    </ul>
+</body>
+</html>

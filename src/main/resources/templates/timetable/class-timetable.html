@@ -1,0 +1,26 @@
+<!-- templates/class-timetable.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thời khóa biểu</title>
+</head>
+<body>
+<h2>Thời khóa biểu của lớp [[${classEntity.name}]]</h2>
+<table border="1">
+    <tr>
+        <th>Ngày</th>
+        <th>Tiết</th>
+        <th>Môn học</th>
+        <th>Giáo viên</th>
+    </tr>
+    <tr th:each="s : ${schedules}">
+        <td th:text="${s.dayOfWeek}"></td>
+        <td th:text="${s.period}"></td>
+        <td th:text="${s.subject}"></td>
+        <td th:text="${s.teacherName}"></td>
+    </tr>
+</table>
+<a th:href="@{'/timetable/' + ${classEntity.id} + '/add'}">Thêm buổi học</a>
+</body>
+</html>
