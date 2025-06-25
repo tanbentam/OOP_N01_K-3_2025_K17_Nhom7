@@ -14,12 +14,11 @@ import java.io.Serializable;
 public class Student implements Serializable {
 private static final long serialVersionUID = 1L;
     
-    // Cấu hình version với giá trị mặc định và chiến lược tạo
     @Version
     @Column(name = "version")
     private Long version = 0L;
 
-    // Getter và setter cho version
+    // Getter và setter 
     public Long getVersion() {
         return version;
     }
@@ -53,19 +52,16 @@ private String address;
     @Column(name = "email")
 private String email;
 
-    // Giới tính
+    
     @Column(name = "gender")
 private String gender;
 
-    // Mã học sinh do người dùng nhập
     @Column(name = "student_code", unique = true)
     private String studentCode;
     
-    // Lớp học
     @Column(name = "class_name")
     private String className;
     
-    // Số điện thoại
     @Column(name = "phone_number")
     private String phoneNumber;
 
@@ -79,16 +75,11 @@ private String gender;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "student_id")
-    /*@JoinTable(
-    name = "student_attendance_records",
-    joinColumns = @JoinColumn(name = "student_id"),
-    inverseJoinColumns = @JoinColumn(name = "attendance_records_id"),
-    uniqueConstraints = @UniqueConstraint(columnNames = {"student_id", "attendance_records_id"})
-    )*/
+    
     private List<AttendanceRecord> attendanceRecords = new ArrayList<>();
 
     public Student() {
-        //Để hibernate tạo UUID
+
     }
 
     // Constructor cập nhật với các trường mới
@@ -114,9 +105,7 @@ private String gender;
         }
     }
 
-    // Getter và Setter cho các trường mới
-
-public List<ClassroomStudent> getClassroomStudents() {
+    public List<ClassroomStudent> getClassroomStudents() {
         return classroomStudents;
     }
 
@@ -240,8 +229,8 @@ public void setGender(String gender) {
     if (this.score == null) {
         this.score = new Score(null, subject, scoreValue);
     } else {
-        this.score.setSubject(subject);        // Sửa setsubject() thành setSubject()
-        this.score.setScoreValue(scoreValue);  // Sửa setscoreValue() thành setScoreValue()
+        this.score.setSubject(subject);
+        this.score.setScoreValue(scoreValue);
     }
 }
     
@@ -257,7 +246,7 @@ public void setGender(String gender) {
                 return record.isPresent();
             }
         }
-        return false; // nếu không có bản ghi thì xem như nghỉ
+        return false; 
     }
 
     //néu nghỉ học thì có phép không
@@ -278,8 +267,8 @@ public void setGender(String gender) {
     System.out.println("Class: " + className);
     System.out.println("Phone Number: " + phoneNumber);
     if (score != null) {
-        System.out.println("Subject: " + score.getSubject());  // Sửa getsubject() thành getSubject()
-        System.out.println("Score: " + score.getScoreValue()); // Sửa getscoreValue() thành getScoreValue()
+        System.out.println("Subject: " + score.getSubject());
+        System.out.println("Score: " + score.getScoreValue());
     } else {
         System.out.println("Score: Not available");
     }

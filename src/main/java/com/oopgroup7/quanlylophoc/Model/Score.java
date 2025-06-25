@@ -1,13 +1,6 @@
 package com.oopgroup7.quanlylophoc.Model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.FetchType;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.UUID;
 
@@ -18,27 +11,36 @@ public class Score implements Serializable {
     @Id
     @GeneratedValue
     @Column(columnDefinition = "BINARY(16)")
-    private UUID id; // Mã định danh duy nhất cho điểm số
-    
-    @Column(columnDefinition = "BINARY(16)")
-    private UUID studentId; 
-    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "studentId", referencedColumnName = "id", insertable = false, updatable = false)
+    private UUID id;
+
+    @Column(name = "value")
+private Double valueDuplicate = 0.0; 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "student_id")
     private Student student;
     
-    private String subject; 
-    private double scoreValue; 
-
+    private String subject;
+    @Column(name = "score_value")
+    
+    private double value;
+    
+    private String notes;
+    
     public Score() {
         // Default constructor for JPA
     }
 
+    public Double getValueDuplicate() {
+    return valueDuplicate;
+}
 
-    public Score(UUID studentId, String subject, double scoreValue){
-        this.studentId = studentId;
+public void setValueDuplicate(Double valueDuplicate) {
+    this.valueDuplicate = valueDuplicate;
+}
+    public Score(Student student, String subject, double value) {
+        this.student = student;
         this.subject = subject;
-        this.scoreValue = scoreValue; 
+        this.value = value;
     }
     
     public UUID getId() {
@@ -49,45 +51,54 @@ public class Score implements Serializable {
         this.id = id;
     }
 
-    public UUID getStudentId() {
-        return studentId;
-    }
-    
-    public void setStudentId(UUID studentId) {
-        this.studentId = studentId;
-    }
-    
     public Student getStudent() {
         return student;
     }
-    
+
     public void setStudent(Student student) {
         this.student = student;
     }
-    
+
     public String getSubject() {
         return subject; 
     }
-    
-    public double getScoreValue() {
-        return scoreValue; 
-    }
-    
+
     public void setSubject(String subject) {
-        this.subject = subject;
-    }
-    
-    public void setScoreValue(double scoreValue) {
-        this.scoreValue = scoreValue;
+        this.subject = subject; 
     }
 
-       @Override
+    public double getValue() {
+        return value; 
+    }
+
+    public double getScoreValue() {
+        return value;
+    }
+
+    public void setScoreValue(double scoreValue) {
+        this.value = scoreValue;
+    }
+
+    public void setValue(double value) {
+        this.value = value; 
+        this.valueDuplicate = value; 
+    }
+    
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+    @Override
     public String toString() {
         return "Score{" +
-                "studentId='" + studentId + '\'' +
+                "id=" + id +
+                ", student=" + (student != null ? student.getName() : "null") +
                 ", subject='" + subject + '\'' +
-                ", scoreValue=" + scoreValue +
+                ", value=" + value +
                 '}';
     }
-
 }

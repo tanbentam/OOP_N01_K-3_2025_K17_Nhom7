@@ -39,64 +39,79 @@ public class StudentController {
         return "student/index";
     }
 
+    
     // Phương thức tìm kiếm chính - tìm kiếm nâng cao với nhiều tiêu chí
     @GetMapping("/search")
-    public String searchStudents(
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) String className,
-            @RequestParam(required = false) String studentCode,
-            @RequestParam(required = false) String gender,
-            @RequestParam(required = false) String email,
-            Model model) {
-        
-        List<Student> students;
-        
-        // Nếu không có tiêu chí tìm kiếm, hiển thị tất cả
-        if ((name == null || name.isEmpty()) && 
-            (className == null || className.isEmpty()) && 
-            (studentCode == null || studentCode.isEmpty()) &&
-            (gender == null || gender.isEmpty()) &&
-            (email == null || email.isEmpty())) {
-            students = studentService.findAll();
-        } 
-        // Nếu chỉ tìm theo mã học sinh
-        else if ((name == null || name.isEmpty()) && 
-                 (className == null || className.isEmpty()) &&
-                 (gender == null || gender.isEmpty()) &&
-                 (email == null || email.isEmpty())) {
-            Optional<Student> student = studentService.findByStudentCode(studentCode);
-            students = student.map(List::of).orElse(List.of());
-        }
-        // Nếu chỉ tìm theo tên
-        else if ((studentCode == null || studentCode.isEmpty()) && 
-                 (className == null || className.isEmpty()) &&
-                 (gender == null || gender.isEmpty()) &&
-                 (email == null || email.isEmpty())) {
-            students = studentService.findByName(name);
-        }
-        // Nếu chỉ tìm theo lớp
-        else if ((name == null || name.isEmpty()) && 
-                 (studentCode == null || studentCode.isEmpty()) &&
-                 (gender == null || gender.isEmpty()) &&
-                 (email == null || email.isEmpty())) {
-            students = studentService.findByClassName(className);
-        }
-        // Tìm kiếm kết hợp nhiều tiêu chí
-        else {
-            students = studentService.searchStudents(name, className, studentCode);
-        }
-        
-        model.addAttribute("students", students);
-        model.addAttribute("name", name);
-        model.addAttribute("className", className);
-        model.addAttribute("studentCode", studentCode);
-        model.addAttribute("gender", gender);
-        model.addAttribute("email", email);
-        model.addAttribute("searchTerm", studentCode);
-        
-        return "student/index";
+public String searchStudents(
+        @RequestParam(required = false) String name,
+        @RequestParam(required = false) String className,
+        @RequestParam(required = false) String studentCode,
+        @RequestParam(required = false) String gender,
+        @RequestParam(required = false) String email,
+        Model model) {
+
+    List<Student> students;
+    // Nếu không có tiêu chí tìm kiếm, hiển thị tất cả
+    if ((name == null || name.isEmpty()) &&
+        (className == null || className.isEmpty()) &&
+        (studentCode == null || studentCode.isEmpty()) &&
+        (gender == null || gender.isEmpty()) &&
+        (email == null || email.isEmpty())) {
+        students = studentService.findAll();
+    }
+    // Nếu chỉ tìm theo mã học sinh
+    else if ((name == null || name.isEmpty()) &&
+             (className == null || className.isEmpty()) &&
+             (gender == null || gender.isEmpty()) &&
+             (email == null || email.isEmpty())) {
+        Optional<Student> student = studentService.findByStudentCode(studentCode);
+        students = student.map(List::of).orElse(List.of());
+    }
+    // Nếu chỉ tìm theo tên
+    else if ((studentCode == null || studentCode.isEmpty()) &&
+             (className == null || className.isEmpty()) &&
+             (gender == null || gender.isEmpty()) &&
+             (email == null || email.isEmpty())) {
+        students = studentService.findByName(name);
+    }
+    // Nếu chỉ tìm theo lớp
+    else if ((name == null || name.isEmpty()) &&
+             (studentCode == null || studentCode.isEmpty()) &&
+             (gender == null || gender.isEmpty()) &&
+             (email == null || email.isEmpty())) {
+        students = studentService.findByClassName(className);
+    }
+    // Nếu chỉ tìm theo email
+    else if ((name == null || name.isEmpty()) &&
+             (className == null || className.isEmpty()) &&
+             (studentCode == null || studentCode.isEmpty()) &&
+             (gender == null || gender.isEmpty()) &&
+             (email != null && !email.isEmpty())) {
+        students = studentService.findByEmail(email);
+    }
+    // Nếu chỉ tìm theo giới tính
+    else if ((name == null || name.isEmpty()) &&
+             (className == null || className.isEmpty()) &&
+             (studentCode == null || studentCode.isEmpty()) &&
+             (email == null || email.isEmpty()) &&
+             (gender != null && !gender.isEmpty())) {
+        students = studentService.findByGender(gender);
+    }
+    // Tìm kiếm kết hợp nhiều tiêu chí
+    else {
+        students = studentService.searchStudents(name, className, studentCode, gender, email);
     }
 
+    model.addAttribute("students", students);
+    model.addAttribute("name", name);
+    model.addAttribute("className", className);
+    model.addAttribute("studentCode", studentCode);
+    model.addAttribute("gender", gender);
+    model.addAttribute("email", email);
+    model.addAttribute("searchTerm", studentCode);
+
+    return "student/index";
+}
     // Hiển thị form thêm học sinh (có combobox chọn lớp)
     @GetMapping("/add")
     public String showAddForm(Model model) {
@@ -138,12 +153,10 @@ public String addStudent(
         if (birthDate != null) {
             student.setDateOfBirth(birthDate);
         }
-        
-        // **FIX CHÍNH: ĐẶT LẠI ID VÀ VERSION ĐỂ HIBERNATE TỰ QUẢN LÝ**
-        student.setId(null);        // Để Hibernate tự tạo UUID
-        student.setVersion(null);   // Để Hibernate tự quản lý version
-        
-        // **SỬ DỤNG REPOSITORY TRỰC TIẾP THAY VÌ SERVICE PHỨC TẠP**
+
+        student.setId(null);
+        student.setVersion(null);
+
         Student savedStudent = studentRepository.save(student);
         
         if (savedStudent != null) {

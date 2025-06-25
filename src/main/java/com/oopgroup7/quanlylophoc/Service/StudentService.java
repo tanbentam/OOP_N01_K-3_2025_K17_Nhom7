@@ -25,7 +25,6 @@ public class StudentService {
     @Autowired
     private ClassroomStudentRepository classroomStudentRepository;
 
-
     @Autowired
     private StudentRepository studentRepository;
 
@@ -50,6 +49,12 @@ public class StudentService {
         return Optional.empty();
         }
     }
+public List<Student> findByEmail(String email) {
+    if (email == null || email.trim().isEmpty()) {
+        return List.of();
+    }
+    return studentRepository.findByEmailContaining(email.trim());
+}
     
     @Transactional(readOnly = true)
     public List<Student> findAll() {
@@ -64,25 +69,23 @@ public class StudentService {
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public Student save(Student student) {
         try {
-            // Đảm bảo version không null khi thêm mới
+
             if (student.getVersion() == null) {
                 student.setVersion(0L);
             }
             
-            // Xử lý cập nhật thực thể hiện có
+            
             if (student.getId() != null) {
                 Optional<Student> existingStudentOpt = studentRepository.findById(student.getId());
                 if (existingStudentOpt.isPresent()) {
                     Student existingStudent = existingStudentOpt.get();
                     
-                    // Lưu version hiện tại để tránh lỗi khi cập nhật
                     Long currentVersion = existingStudent.getVersion();
                     
-                    // Cập nhật các trường theo cách an toàn
                     existingStudent.setName(student.getName());
                     existingStudent.setAge(student.getAge());
                     
-                    // Cập nhật các trường bổ sung nếu có
+                    
                     if (student.getStudentCode() != null) {
                         existingStudent.setStudentCode(student.getStudentCode());
                     }
@@ -95,7 +98,7 @@ public class StudentService {
                         existingStudent.setPhoneNumber(student.getPhoneNumber());
                     }
                     
-                    // Cập nhật các trường mới thêm nếu chúng không null
+                    
                     if (student.getGender() != null) {
                         existingStudent.setGender(student.getGender());
                     }
@@ -120,7 +123,7 @@ public class StudentService {
                         existingStudent.setAttendanceRecords(student.getAttendanceRecords());
                     }
                     
-                    // Đảm bảo version chỉ tăng khi có cập nhật thật sự
+                    
                     if (!currentVersion.equals(student.getVersion())) {
                         existingStudent.setVersion(currentVersion);
                     }
@@ -128,14 +131,14 @@ public class StudentService {
                     return studentRepository.save(existingStudent);
                 }
             } else {
-                // Đối với đối tượng mới, đảm bảo id và version được thiết lập
+                
                 if (student.getId() == null) {
                     student.setId(UUID.randomUUID());
                 }
                 student.setVersion(0L);
             }
             
-            // Nếu là thêm mới hoặc không tìm thấy đối tượng cũ
+           
             return studentRepository.save(student);
         } catch (Exception e) {
             e.printStackTrace();
@@ -147,10 +150,10 @@ public class StudentService {
 @Transactional
 public Student saveNew(Student student) {
     try {
-        // Tạo đối tượng hoàn toàn mới
+        
         Student newStudent = new Student();
         
-        // Copy dữ liệu
+        
         newStudent.setName(student.getName());
         newStudent.setAge(student.getAge());
         newStudent.setStudentCode(student.getStudentCode());
@@ -167,7 +170,9 @@ public Student saveNew(Student student) {
         newStudent.setId(null); // Để Hibernate tự tạo
         newStudent.setVersion(0L); // Version khởi tạo
         
-        // Lưu trực tiếp
+        newStudent.setId(null); 
+        newStudent.setVersion(0L); 
+        
         return studentRepository.save(newStudent);
         
     } catch (Exception e) {
@@ -176,14 +181,12 @@ public Student saveNew(Student student) {
     }
 }
 
-// ...existing code...
-
 @Transactional
 public boolean delete(UUID id) {
     try {
-        // Kiểm tra học sinh có tồn tại không
+        // Kiểm tra xem học sinh có tồn tại không
         if (!studentRepository.existsById(id)) {
-            System.out.println("❌ Không tìm thấy học sinh với ID: " + id);
+            System.out.println(" Không tìm thấy học sinh với ID: " + id);
             return false;
         }
         
@@ -191,44 +194,40 @@ public boolean delete(UUID id) {
         Optional<Student> studentOpt = studentRepository.findById(id);
         String studentName = studentOpt.map(Student::getName).orElse("Unknown");
         
-        System.out.println("🔄 Đang xóa học sinh: " + studentName + " (ID: " + id + ")");
+        System.out.println(" Đang xóa học sinh: " + studentName + " (ID: " + id + ")");
         
-        // XÓA PHẦN XỬ LÝ ClassroomStudent - để cascade tự xử lý
-        // Hoặc sử dụng query trực tiếp nếu cần
         try {
-            // Xóa bằng query trực tiếp thay vì findByStudentId
+            
             classroomStudentRepository.deleteAll(
                 classroomStudentRepository.findAll().stream()
                     .filter(cs -> cs.getStudent().getId().equals(id))
                     .toList()
             );
         } catch (Exception e) {
-            System.out.println("⚠️ Lỗi khi xóa quan hệ lớp học: " + e.getMessage());
+            System.out.println(" Lỗi khi xóa quan hệ lớp học: " + e.getMessage());
         }
         
         // Xóa học sinh
         studentRepository.deleteById(id);
         
-        // Flush để đảm bảo thay đổi được áp dụng ngay
         try {
             studentRepository.flush();
         } catch (Exception e) {
-            System.out.println("⚠️ Flush warning: " + e.getMessage());
+            System.out.println(" Flush warning: " + e.getMessage());
         }
         
-        // Kiểm tra xem đã xóa thành công chưa
         boolean stillExists = studentRepository.existsById(id);
         
         if (!stillExists) {
-            System.out.println("✅ Xóa học sinh '" + studentName + "' thành công!");
+            System.out.println(" Xóa học sinh '" + studentName + "' thành công!");
             return true;
         } else {
-            System.out.println("❌ Lỗi: Học sinh vẫn tồn tại sau khi xóa");
+            System.out.println(" Lỗi: Học sinh vẫn tồn tại sau khi xóa");
             return false;
         }
         
     } catch (Exception e) {
-        System.err.println("❌ Lỗi khi xóa học sinh: " + e.getMessage());
+        System.err.println(" Lỗi khi xóa học sinh: " + e.getMessage());
         e.printStackTrace();
         return false;
     }
@@ -258,13 +257,33 @@ public boolean delete(UUID id) {
     public List<Student> findByName(String name) {
         return studentRepository.findByNameContainingIgnoreCase(name);
     }
-    
-    @Transactional(readOnly = true)
-    public List<Student> findByClassName(String className) {
-        return studentRepository.findByClassName(className);
+
+// Các phương thức tìm kiếm mới
+@Transactional(readOnly = true)
+public List<Student> findByEmailExact(String email) {
+    if (email == null || email.trim().isEmpty()) {
+        return List.of();
     }
-    
-    @Transactional(readOnly = true)
+    return studentRepository.findByEmail(email.trim());
+}
+
+@Transactional(readOnly = true)
+public List<Student> findByGender(String gender) {
+    if (gender == null || gender.trim().isEmpty()) {
+        return List.of();
+    }
+    return studentRepository.findByGender(gender.trim());
+}
+
+
+
+
+@Transactional(readOnly = true)
+public List<Student> findByClassName(String className) {
+    return studentRepository.findByClassName(className);
+}
+
+@Transactional(readOnly = true)
 public List<Student> searchStudents(String name, String className, String studentCode, String gender, String email) {
     return studentRepository.searchStudents(name, className, studentCode, gender, email);
 }
@@ -272,17 +291,12 @@ public List<Student> searchStudents(String name, String className, String studen
 // THÊM METHOD OVERLOAD CHO TƯƠNG THÍCH NGƯỢC
 @Transactional(readOnly = true)
 public List<Student> searchStudents(String name, String className, String studentCode) {
-    // Gọi method với 5 tham số, truyền null cho gender và email
+    
     return studentRepository.searchStudents(name, className, studentCode, null, null);
 }
     @Transactional(readOnly = true)
     public List<Student> findStudentsInClassOrderByName(String className) {
         return studentRepository.findByClassNameOrderByNameAsc(className);
-    }
-    
-    @Transactional(readOnly = true)
-    public List<Student> findByAgeRange(int minAge, int maxAge) {
-        return studentRepository.findByAgeBetween(minAge, maxAge);
     }
     
     @Transactional(readOnly = true)
