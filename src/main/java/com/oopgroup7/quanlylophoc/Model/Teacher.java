@@ -3,6 +3,8 @@ package com.oopgroup7.quanlylophoc.Model;
 import java.io.Serializable;
 import java.util.UUID;
 
+import jakarta.persistence.Version;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -19,6 +21,11 @@ public class Teacher implements Serializable {
     private String password; // Thêm trường password
     
 
+    //thêm version
+    @Version
+    private Long version;
+
+
     public Teacher() {
         // Default constructor for JPA
     }
@@ -32,6 +39,14 @@ public class Teacher implements Serializable {
     // Getter methods
     public UUID getId() {
         return id;
+    }
+
+    public Long getVersion() { // getter cho version
+        return version;
+    }
+
+    public void setVersion(Long version) { // setter cho version
+        this.version = version;
     }
 
     public void setId(UUID id) {

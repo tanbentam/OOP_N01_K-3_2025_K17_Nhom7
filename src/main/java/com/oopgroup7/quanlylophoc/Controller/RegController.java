@@ -184,15 +184,15 @@ public class RegController {
                 result.rejectValue("username", "error.user", "Tên đăng nhập đã tồn tại");
                 return "register/teacher-form";
             }
-            
-            teacherService.save(teacher);
-            logger.info("Đã đăng ký thành công giáo viên: {}", teacher.getName());
-            redirectAttributes.addFlashAttribute("success", "Đăng ký giáo viên thành công!");
-            return "redirect:/login";
-        } catch (Exception e) {
-            logger.error("Lỗi khi đăng ký giáo viên: {}", e.getMessage());
-            redirectAttributes.addFlashAttribute("error", "Đã xảy ra lỗi khi đăng ký: " + e.getMessage());
-            return "redirect:/register/teacher";
+            Teacher savedTeacher = teacherService.saveNew(teacher);
+        
+        logger.info("Đã đăng ký thành công giáo viên: {}", savedTeacher.getName());
+        redirectAttributes.addFlashAttribute("success", "Đăng ký giáo viên thành công!");
+        return "redirect:/login";
+    } catch (Exception e) {
+        logger.error("Lỗi khi đăng ký giáo viên: {}", e.getMessage());
+        redirectAttributes.addFlashAttribute("error", "Đã xảy ra lỗi khi đăng ký: " + e.getMessage());
+        return "redirect:/register/teacher";
         }
     }
     
