@@ -15,7 +15,7 @@ public class Schedule {
     private Long id;
 
     private String dayOfWeek;    // Ví dụ: "Thứ Hai"
-    private String period;       // Ví dụ: "Tiết 1"
+    private int period;       // Ví dụ: "Tiết 1"
     private String subject;      // Ví dụ: "Toán"
     private String teacherName;  // Ví dụ: "Nguyễn Văn A"
 
@@ -23,10 +23,11 @@ public class Schedule {
     @JoinColumn(name = "classroom_id")
     private Classroom classroom;
 
+
     // Constructors
     public Schedule() {}
 
-    public Schedule(String dayOfWeek, String period, String subject, String teacherName, Classroom classRoom) {
+    public Schedule(String dayOfWeek, int period, String subject, String teacherName, Classroom classRoom) {
         this.dayOfWeek = dayOfWeek;
         this.period = period;
         this.subject = subject;
@@ -47,10 +48,10 @@ public class Schedule {
     public void setDayOfWeek(String dayOfWeek) 
         { this.dayOfWeek = dayOfWeek; }
 
-    public String getPeriod()
+    public int getPeriod()
          { return period; }
 
-    public void setPeriod(String period)
+    public void setPeriod(int period)
          { this.period = period; }
 
     public String getSubject()
