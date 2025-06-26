@@ -5,6 +5,11 @@ import com.oopgroup7.quanlylophoc.Model.Student;
 import com.oopgroup7.quanlylophoc.Repository.StudentRepository;
 import com.oopgroup7.quanlylophoc.Service.ScoreService;
 import com.oopgroup7.quanlylophoc.Service.StudentService;
+
+import java.util.UUID;
+
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -57,6 +62,44 @@ public String index(
     model.addAttribute("poorCount", poor);
     
     return "Score/index";
+}
+
+
+    //Hiển thị điểm cho học sinh
+    @GetMapping("/student")
+    public String viewStudentScores(HttpSession session, Model model) {
+    // Lấy ID của học sinh từ session
+    String studentIdStr = (String) session.getAttribute("currentUserId");
+    
+    // Nếu không có studentId trong session, chuyển hướng đến trang đăng nhập
+    if (studentIdStr == null) {
+        return "redirect:/login";
+    }
+    UUID studentId = UUID.fromString(studentIdStr);
+    // Lấy danh sách điểm của học sinh
+    List<Score> scores = scoreService.findByStudentId(studentId);
+    model.addAttribute("scores", scores);
+    
+    // Thêm thống kê 
+    long excellent = 0, good = 0, average = 0, poor = 0;
+    for (Score score : scores) {
+        if (score.getValue() >= 8.5) {
+            excellent++;
+        } else if (score.getValue() >= 7.0) {
+            good++;
+        } else if (score.getValue() >= 5.0) {
+            average++;
+        } else {
+            poor++;
+        }
+    }
+    
+    model.addAttribute("excellentCount", excellent);
+    model.addAttribute("goodCount", good);
+    model.addAttribute("averageCount", average);
+    model.addAttribute("poorCount", poor);
+    
+    return "Score/index-student";
 }
     
     // Hiển thị form thêm điểm

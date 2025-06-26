@@ -128,4 +128,10 @@ public class ScoreService {
         
         return stats;
     }
+
+    @Transactional(readOnly = true)
+    public List<Score> findByStudentId(UUID studentId) {
+        return scoreRepository.findByStudentId(studentId);
+}
+
 }

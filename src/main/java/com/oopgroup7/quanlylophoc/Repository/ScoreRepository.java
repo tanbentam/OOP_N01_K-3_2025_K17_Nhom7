@@ -43,4 +43,8 @@ public interface ScoreRepository extends JpaRepository<Score, UUID> {
     // Phân trang và tìm kiếm theo tên học sinh
     @Query("SELECT s FROM Score s WHERE LOWER(s.student.name) LIKE LOWER(CONCAT('%', :studentName, '%'))")
     Page<Score> findByStudentNameContaining(String studentName, Pageable pageable);
+
+    // Tìm điểm theo ID học sinh
+    List<Score> findByStudentId(UUID studentId);
+
 }
