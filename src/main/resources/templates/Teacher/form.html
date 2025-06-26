@@ -54,9 +54,9 @@
                         
                         <div class="col-md-6">
                             <label for="username" class="form-label">Tên đăng nhập <span class="text-danger">*</span></label>
-                          <!-- Lệnh này khiến username khi cập nhật giáo viên sẽ ở dạng chỉ đọc -->
+                          <!-- Lệnh này khiến username khi cập nhật giáo viên sẽ ở dạng chỉ đọc, chỉ cho chỉnh sửa khi nó chưa có giá trị -->
                             <input type="text" class="form-control" id="username" th:field="*{username}" 
-                                   th:readonly="${!isAdd && teacher.username != null}" required> 
+                                   th:readonly="${teacher.username != null && teacher.username != ''}" required> 
                           <!--   Lệnh này sẽ cho phép chỉnh sửa username trong giao diện cập nhật thông tin giáo viên
                                     <input type="text" class="form-control" id="username" th:field="*{username}" required>  -->      
                         </div>
