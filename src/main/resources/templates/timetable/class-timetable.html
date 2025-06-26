@@ -1,26 +1,122 @@
-<!-- templates/class-timetable.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Thời khóa biểu</title>
+    <title>Thời Khóa Biểu - [[${classroom.className}]]</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .teacher-info, .student-list {
+            margin-bottom: 1.5rem;
+        }
+
+        .student-list ul {
+            list-style: none;
+            padding-left: 1rem;
+        }
+
+        .student-list li::before {
+            content: "👤 ";
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: center;
+            border: 1px solid #ccc;
+        }
+
+        th {
+            background-color: #667eea;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .back-link {
+            display: inline-block;
+            text-decoration: none;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .back-link:hover {
+            background: linear-gradient(135deg, #5a67d8, #6b46c1);
+        }
+    </style>
 </head>
 <body>
-<h2>Thời khóa biểu của lớp [[${classEntity.name}]]</h2>
-<table border="1">
-    <tr>
-        <th>Ngày</th>
-        <th>Tiết</th>
-        <th>Môn học</th>
-        <th>Giáo viên</th>
-    </tr>
-    <tr th:each="s : ${schedules}">
-        <td th:text="${s.dayOfWeek}"></td>
-        <td th:text="${s.period}"></td>
-        <td th:text="${s.subject}"></td>
-        <td th:text="${s.teacherName}"></td>
-    </tr>
-</table>
-<a th:href="@{'/timetable/' + ${classEntity.id} + '/add'}">Thêm buổi học</a>
+<div class="container">
+    <h1 th:text="'Thời Khóa Biểu - ' + ${classroom.className}"></h1>
+
+    <div class="teacher-info">
+        <p><strong>👨‍🏫 Giáo viên chủ nhiệm:</strong> <span th:text="${classroom.teacher.name}">Tên GV</span></p>
+    </div>
+
+    <div class="student-list">
+        <h3>📚 Danh sách học sinh:</h3>
+        <ul>
+            <li th:each="stu : ${classroom.studentList}" th:text="${stu.name}">Tên học sinh</li>
+        </ul>
+    </div>
+
+    <div class="schedule-table">
+        <h3>🗓️ Thời khóa biểu:</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Tiết / Thứ</th>
+                    <th>Thứ 2</th>
+                    <th>Thứ 3</th>
+                    <th>Thứ 4</th>
+                    <th>Thứ 5</th>
+                    <th>Thứ 6</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="p : ${periods}">
+                    <td th:text="'Tiết ' + ${p}"></td>
+                    <td th:each="d : ${daysOfWeek}">
+                        <div th:with="s=${scheduleMap[d]?.get(p)}">
+                            <span th:if="${s != null}" th:text="${s.subject + ' - ' + s.teacherName}"></span>
+                            <span th:if="${s == null}">-</span>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <a class="back-link" href="/timetable">⬅ Quay lại danh sách lớp</a>
+</div>
 </body>
 </html>
