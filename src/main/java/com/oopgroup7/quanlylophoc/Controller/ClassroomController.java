@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.oopgroup7.quanlylophoc.Model.Classroom;
 import com.oopgroup7.quanlylophoc.Model.Student;
+import com.oopgroup7.quanlylophoc.Model.Teacher;
 import com.oopgroup7.quanlylophoc.Service.ClassroomService;
 import com.oopgroup7.quanlylophoc.Service.StudentService;
 import com.oopgroup7.quanlylophoc.Service.TeacherService;
@@ -84,9 +85,16 @@ public String showAddStudentForm(@PathVariable UUID id, Model model) {
     // Xử lý thêm lớp học
     @PostMapping("/add")
     public String addClassroom(@ModelAttribute Classroom classroom) {
-        classroomService.save(classroom);
-        return "redirect:/classrooms";
+    // Lấy teacher từ database thay vì dùng teacher từ form
+    if (classroom.getTeacher() != null && classroom.getTeacher().getId() != null) {
+        Teacher teacher = teacherService.findById(classroom.getTeacher().getId())
+                .orElse(classroom.getTeacher());
+        classroom.setTeacher(teacher);
     }
+    
+    classroomService.save(classroom);
+    return "redirect:/classrooms";
+}
 
     // Hiển thị form sửa lớp học
     @GetMapping("/edit/{id}")
