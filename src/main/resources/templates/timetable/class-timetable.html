@@ -72,6 +72,21 @@
         .back-link:hover {
             background: linear-gradient(135deg, #5a67d8, #6b46c1);
         }
+
+        .edit-icon {
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-top: 4px;
+            background: #6b46c1;
+            color: white;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+
+        .edit-icon:hover {
+            background: #5a35b1;
+        }
     </style>
 </head>
 <body>
@@ -79,7 +94,9 @@
     <h1 th:text="'Thời Khóa Biểu - ' + ${classroom.className}"></h1>
 
     <div class="teacher-info">
-        <p><strong>👨‍🏫 Giáo viên chủ nhiệm:</strong> <span th:text="${classroom.teacher.name}">Tên GV</span></p>
+        <p><strong>👨‍🏫 Giáo viên chủ nhiệm:</strong>
+            <span th:text="${classroom.teacher.name}">Tên GV</span>
+        </p>
     </div>
 
     <div class="student-list">
@@ -91,32 +108,40 @@
 
     <div class="schedule-table">
         <h3>🗓️ Thời khóa biểu:</h3>
+    <div style="margin-top: 1.5rem;">
+        <a th:href="@{'/timetable/' + ${classroom.id} + '/add'}" class="back-link" style="margin-left: 1rem;">➕ Thêm buổi học</a>
+    </div>
         <table>
             <thead>
-                <tr>
-                    <th>Tiết / Thứ</th>
-                    <th>Thứ 2</th>
-                    <th>Thứ 3</th>
-                    <th>Thứ 4</th>
-                    <th>Thứ 5</th>
-                    <th>Thứ 6</th>
-                </tr>
+            <tr>
+                <th>Tiết / Thứ</th>
+                <th>Thứ 2</th>
+                <th>Thứ 3</th>
+                <th>Thứ 4</th>
+                <th>Thứ 5</th>
+                <th>Thứ 6</th>
+            </tr>
             </thead>
             <tbody>
-                <tr th:each="p : ${periods}">
-                    <td th:text="'Tiết ' + ${p}"></td>
-                    <td th:each="d : ${daysOfWeek}">
-                        <div th:with="s=${scheduleMap[d]?.get(p)}">
-                            <span th:if="${s != null}" th:text="${s.subject + ' - ' + s.teacherName}"></span>
-                            <span th:if="${s == null}">-</span>
-                        </div>
-                    </td>
-                </tr>
+            <tr th:each="p : ${periods}">
+                <td th:text="'Tiết ' + ${p}"></td>
+                <td th:each="d : ${daysOfWeek}">
+                    <div th:with="s=${scheduleMap[d]?.get(p)}">
+                        <span th:if="${s != null}">
+                            <span th:text="${s.subject + ' - ' + s.teacherName}"></span><br/>
+                            <a th:href="@{'/timetable/' + ${classroom.id} + '/edit/' + ${s.id}}" class="edit-icon">✏️</a>
+                        </span>
+                        <span th:if="${s == null}">-</span>
+                    </div>
+                </td>
+            </tr>
             </tbody>
         </table>
     </div>
 
-    <a class="back-link" href="/timetable">⬅ Quay lại danh sách lớp</a>
+    <div style="margin-top: 1.5rem;">
+        <a class="back-link" href="/timetable">⬅ Quay lại danh sách lớp</a>
+    </div>
 </div>
 </body>
 </html>
