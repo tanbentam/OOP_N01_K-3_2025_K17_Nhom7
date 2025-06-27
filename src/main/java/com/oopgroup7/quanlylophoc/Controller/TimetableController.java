@@ -38,8 +38,8 @@ public class TimetableController {
     }
 
     // Hiển thị thời khóa biểu của một lớp
- @GetMapping("/{classId}")
-public String viewClassSchedule(@PathVariable UUID classId, Model model) {
+    @GetMapping("/{classId}")
+    public String viewClassSchedule(@PathVariable UUID classId, Model model) {
     Classroom classroom = classroomRepository.findById(classId).orElse(null);
     List<Schedule> scheduleList = scheduleService.getSchedulesByClassId(classId);
 
@@ -80,5 +80,8 @@ public String viewClassSchedule(@PathVariable UUID classId, Model model) {
         scheduleService.saveSchedule(classId, schedule);
         return "redirect:/timetable/" + classId;
     }
+
+    
+
 }
 

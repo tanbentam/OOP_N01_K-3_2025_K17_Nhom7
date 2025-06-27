@@ -13,9 +13,19 @@ import java.util.UUID;
 @Repository
 public interface TeacherRepository extends JpaRepository<Teacher, UUID> {
     
-    // Tìm giáo viên theo username
+   // Phương thức cũ - có thể gây lỗi
     Optional<Teacher> findByUsername(String username);
     
+    // THÊM PHƯƠNG THỨC MỚI - trả về List và sắp xếp theo ID
+    @Query("SELECT t FROM Teacher t WHERE t.username = :username ORDER BY t.id ASC")
+    List<Teacher> findAllByUsernameOrderById(@Param("username") String username);
+    
+    // HOẶC dùng method name query
+    List<Teacher> findAllByUsernameOrderByIdAsc(String username);
+
+    @Query("SELECT t FROM Teacher t WHERE t.username = :username ORDER BY t.id ASC")
+    Optional<Teacher> findFirstByUsername(@Param("username") String username);
+
     // Tìm kiếm giáo viên theo tên (không phân biệt hoa thường)
     @Query("SELECT t FROM Teacher t WHERE LOWER(t.name) LIKE LOWER(CONCAT('%', :name, '%'))")
     List<Teacher> findByNameContainingIgnoreCase(@Param("name") String name);
