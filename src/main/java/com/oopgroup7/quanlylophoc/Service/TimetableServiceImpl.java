@@ -7,32 +7,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.oopgroup7.quanlylophoc.Model.Classroom;
-import com.oopgroup7.quanlylophoc.Model.Schedule;
+import com.oopgroup7.quanlylophoc.Model.Timetable;
 import com.oopgroup7.quanlylophoc.Repository.ClassroomRepository;
-import com.oopgroup7.quanlylophoc.Repository.ScheduleRepository;
+import com.oopgroup7.quanlylophoc.Repository.TimetableRepository;
 
 @Service
-public class ScheduleServiceImpl implements ScheduleService {
+public class TimetableServiceImpl implements TimetableService {
 
     @Autowired
-    private ScheduleRepository scheduleRepository;
+    private TimetableRepository timetableRepository;
 
     @Autowired
     private ClassroomRepository classroomRepository;
 
     @Override
-    public List<Schedule> getSchedulesByClassId(UUID classId) {
-        return scheduleRepository.findByClassroom_Id(classId);
+    public List<Timetable> getTimetablesByClassId(UUID classId) {
+        return timetableRepository.findByClassroom_Id(classId);
     }
 
     @Override
-    public void saveSchedule(UUID classId, Schedule schedule) {
+    public void saveTimetable(UUID classId, Timetable timetable) {
         Classroom classroom = classroomRepository.findById(classId).orElse(null);
         if (classroom != null) {
-            schedule.setClassroom(classroom);
-            scheduleRepository.save(schedule);
+            timetable.setClassroom(classroom);
+            timetableRepository.save(timetable);
         } else {
             throw new IllegalArgumentException("Classroom not found with ID: " + classId);
         }
     }
-}  
+}

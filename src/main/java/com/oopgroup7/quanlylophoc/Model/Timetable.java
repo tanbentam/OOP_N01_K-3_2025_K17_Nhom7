@@ -8,7 +8,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
 @Entity
-public class Schedule {
+public class Timetable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,9 +25,9 @@ public class Schedule {
 
 
     // Constructors
-    public Schedule() {}
+    public Timetable() {}
 
-    public Schedule(String dayOfWeek, int period, String subject, String teacherName, Classroom classRoom) {
+    public Timetable(String dayOfWeek, int period, String subject, String teacherName, Classroom classRoom) {
         this.dayOfWeek = dayOfWeek;
         this.period = period;
         this.subject = subject;
@@ -72,4 +72,3 @@ public class Schedule {
     public void setClassroom(Classroom classRoom)   
         { this.classroom = classRoom; }
 }
-

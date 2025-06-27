@@ -54,7 +54,7 @@ public class Classroom implements Serializable {
 
     // Mối quan hệ với thời khóa biểu
     @OneToMany(mappedBy = "classroom", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Schedule> schedules = new ArrayList<>();
+    private List<Timetable> timetables = new ArrayList<>();
 
     // Constructor mặc định
     public Classroom() {}
@@ -114,12 +114,12 @@ public class Classroom implements Serializable {
         this.classroomStudents = classroomStudents;
     }
 
-    public List<Schedule> getSchedules() {
-        return schedules;
+    public List<Timetable> getSchedules() {
+        return timetables;
     }
 
-    public void setSchedules(List<Schedule> schedules) {
-        this.schedules = schedules;
+    public void setTimetables(List<Timetable> timetables) {
+        this.timetables = timetables;
     }
 }
 
