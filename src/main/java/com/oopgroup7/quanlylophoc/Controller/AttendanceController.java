@@ -44,7 +44,7 @@ public class AttendanceController {
         List<Classroom> classrooms = classroomService.findAll();
         model.addAttribute("classrooms", classrooms);
         model.addAttribute("today", LocalDate.now());
-        return "Attendance/index";
+        return "attendance/index";
     }
 
     
@@ -90,7 +90,7 @@ public class AttendanceController {
         model.addAttribute("attendanceStatus", attendanceStatus);
         model.addAttribute("permissionStatus", permissionStatus);
         
-        return "Attendance/form";
+        return "attendance/form";
     }
     
     /**
@@ -133,7 +133,7 @@ public class AttendanceController {
     public String showClassrooms(Model model) {
         List<Classroom> classrooms = classroomService.findAll();
         model.addAttribute("classrooms", classrooms);
-        return "Attendance/report";
+        return "attendance/report";
     }
 
 
@@ -147,7 +147,7 @@ public String showAttendanceDates(@PathVariable UUID classroomId, Model model) {
     model.addAttribute("dates", dates);
     model.addAttribute("classroom", classroom);
     model.addAttribute("classroomId", classroomId);
-    return "Attendance/dates";
+    return "attendance/dates";
 }
 
 // Hiển thị kết quả điểm danh theo lớp và ngày
@@ -160,7 +160,7 @@ public String showAttendanceResult(@RequestParam("classId") UUID classId,
     model.addAttribute("records", records);
     model.addAttribute("classroom", classroom);
     model.addAttribute("date", date);
-    return "Attendance/result";
+    return "attendance/result";
 }
 // Sửa điểm danh
 @GetMapping("/edit/{id}")
@@ -173,7 +173,7 @@ public String showEditForm(@PathVariable("id") UUID id, Model model) {
     UUID classId = attendance.getStudent().getClassroomStudents().get(0).getClassroom().getId();
     model.addAttribute("classId", classId);
 
-    return "Attendance/edit";
+    return "attendance/edit";
 }
 // Cập nhật điểm danh
 @PostMapping("/update")
@@ -254,14 +254,14 @@ public String deleteByClassAndDate(@RequestParam("classId") UUID classId,
             model.addAttribute("date", date);
             model.addAttribute("formattedDate", date.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")));
             
-            return "Attendance/result";
+            return "attendance/result";
         } catch (Exception e) {
             e.printStackTrace();
             model.addAttribute("errorMessage", "Lỗi khi tạo báo cáo: " + e.getMessage());
             List<String> classNames = attendanceService.getClassroomNames();
             model.addAttribute("classNames", classNames);
             model.addAttribute("today", LocalDate.now());
-            return "Attendance/report";
+            return "attendance/report";
         }
     }*/
 }
