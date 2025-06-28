@@ -32,7 +32,7 @@ public class LoginController {
         if (session.getAttribute("currentUser") != null) {
             return "redirect:/dashboard";
         }
-        return "Login/index";
+        return "login/index";
     }
     
     // Xử lý đăng nhập
@@ -122,7 +122,7 @@ public String processLogin(@RequestParam("username") String username,
         model.addAttribute("currentUser", student);
         model.addAttribute("userName", student.getName());
         
-        return "Dashboard/student";
+        return "dashboard/student";
     }
     
     // Dashboard cho giáo viên
@@ -137,7 +137,7 @@ public String processLogin(@RequestParam("username") String username,
         model.addAttribute("userName", teacher.getName());
         model.addAttribute("subject", teacher.getSubject());
         
-        return "Dashboard/teacher";
+        return "dashboard/teacher";
     }
     
     // Dashboard cho admin
@@ -155,7 +155,7 @@ public String processLogin(@RequestParam("username") String username,
         model.addAttribute("teacherCount", teachers.size());
         model.addAttribute("userName", "Administrator");
         
-        return "Admin/index";
+        return "admin/index";
     }
     
     // Kiểm tra quyền truy cập

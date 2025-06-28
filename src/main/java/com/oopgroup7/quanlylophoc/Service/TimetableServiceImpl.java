@@ -35,14 +35,4 @@ public class TimetableServiceImpl implements TimetableService {
             throw new IllegalArgumentException("Classroom not found with ID: " + classId);
         }
     }
-
-        @Override
-    public Timetable getById(Long id) {
-        return timetableRepository.findById(id).orElse(null);
-    }
-
-    @Override
-    public void save(Timetable timetable) {
-        timetableRepository.save(timetable);
-    }
 }
