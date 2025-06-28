@@ -7,6 +7,8 @@ import com.oopgroup7.quanlylophoc.Service.AttendanceService;
 import com.oopgroup7.quanlylophoc.Service.ClassroomService;
 import com.oopgroup7.quanlylophoc.Service.StudentService;
 
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -35,12 +37,36 @@ public class AttendanceController {
     
     @Autowired
     private StudentService studentService;
+
+    /**
+     * Kiểm tra quyền truy cập
+     */
+    private boolean hasRole(HttpSession session, String requiredRole) {
+        String currentRole = (String) session.getAttribute("currentUserRole");
+        return requiredRole.equals(currentRole);
+    }
+    
+    private boolean isTeacherOrAdmin(HttpSession session) {
+        String role = (String) session.getAttribute("currentUserRole");
+        return "teacher".equals(role) || "admin".equals(role);
+    }
     
     /**
-     * Trang chủ điểm danh - hiển thị form chọn lớp
+     * Trang chủ điểm danh - hiển thị form chọn lớp hoặc chuyển hướng học sinh
      */
     @GetMapping
-    public String index(Model model) {
+    public String index(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
+        // Kiểm tra nếu là học sinh thì chuyển đến trang xem điểm danh của học sinh
+        if (hasRole(session, "student")) {
+            return "redirect:/attendance/student";
+        }
+        
+        // Chỉ giáo viên và admin có thể truy cập chức năng quản lý điểm danh
+        if (!isTeacherOrAdmin(session)) {
+            redirectAttributes.addFlashAttribute("error", "Bạn không có quyền truy cập chức năng này");
+            return "redirect:/login";
+        }
+        
         List<Classroom> classrooms = classroomService.findAll();
         model.addAttribute("classrooms", classrooms);
         model.addAttribute("today", LocalDate.now());
@@ -55,8 +81,16 @@ public class AttendanceController {
             @RequestParam(required = false) UUID classId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             Model model,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes,
+            HttpSession session) {
             
+        // Chỉ giáo viên và admin có thể truy cập chức năng điểm danh
+        if (!isTeacherOrAdmin(session)) {
+            redirectAttributes.addFlashAttribute("error", "Bạn không có quyền truy cập chức năng này");
+            return "redirect:/login";
+        }
+        
+        // Code hiện tại giữ nguyên
         if (classId == null) {
             return "redirect:/attendance";
         }
@@ -102,7 +136,14 @@ public class AttendanceController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             @RequestParam(value = "studentIds", required = false) List<UUID> presentStudentIds,
             @RequestParam(value = "permissions", required = false) List<UUID> permissionStudentIds,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes,
+            HttpSession session) {
+        
+        // Kiểm tra quyền
+        if (!isTeacherOrAdmin(session)) {
+            redirectAttributes.addFlashAttribute("error", "Bạn không có quyền thực hiện điểm danh");
+            return "redirect:/login";
+        }
         
         try {
             List<Student> allStudents = studentService.findStudentsByClassroomId(classId);
@@ -130,7 +171,13 @@ public class AttendanceController {
     // Hiển thị form chọn lớp để xem các ngày đã điểm danh
 // Lấy danh sách lớp
 @GetMapping("/report")
-    public String showClassrooms(Model model) {
+    public String showClassrooms(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
+        // Kiểm tra quyền
+        if (!isTeacherOrAdmin(session)) {
+            redirectAttributes.addFlashAttribute("error", "Bạn không có quyền truy cập chức năng này");
+            return "redirect:/login";
+        }
+        
         List<Classroom> classrooms = classroomService.findAll();
         model.addAttribute("classrooms", classrooms);
         return "attendance/report";
@@ -139,90 +186,182 @@ public class AttendanceController {
 
 // Lấy các ngày đã điểm danh của lớp
 @GetMapping("/report/{classroomId}")
-public String showAttendanceDates(@PathVariable UUID classroomId, Model model) {
-    System.out.println("classroomId nhận được: " + classroomId);
-    List<LocalDate> dates = attendanceService.getAttendanceDatesByClassroom(classroomId);
-    System.out.println("Số ngày điểm danh lấy được: " + dates.size());
-    Classroom classroom = classroomService.findById(classroomId).orElse(null);
-    model.addAttribute("dates", dates);
-    model.addAttribute("classroom", classroom);
-    model.addAttribute("classroomId", classroomId);
-    return "attendance/dates";
-}
+    public String showAttendanceDates(@PathVariable UUID classroomId, Model model, 
+                                     HttpSession session, RedirectAttributes redirectAttributes) {
+        // Kiểm tra quyền
+        if (!isTeacherOrAdmin(session)) {
+            redirectAttributes.addFlashAttribute("error", "Bạn không có quyền truy cập chức năng này");
+            return "redirect:/login";
+        }
+        
+        List<LocalDate> dates = attendanceService.getAttendanceDatesByClassroom(classroomId);
+        Classroom classroom = classroomService.findById(classroomId).orElse(null);
+        model.addAttribute("dates", dates);
+        model.addAttribute("classroom", classroom);
+        model.addAttribute("classroomId", classroomId);
+        return "attendance/dates";
+    }
 
 // Hiển thị kết quả điểm danh theo lớp và ngày
 @GetMapping("/result")
-public String showAttendanceResult(@RequestParam("classId") UUID classId,
-                                   @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-                                   Model model) {
-    List<AttendanceRecord> records = attendanceService.getAttendanceByClassroomAndDate(classId, date);
-    Classroom classroom = classroomService.findById(classId).orElse(null);
-    model.addAttribute("records", records);
-    model.addAttribute("classroom", classroom);
-    model.addAttribute("date", date);
-    return "attendance/result";
-}
-// Sửa điểm danh
-@GetMapping("/edit/{id}")
-public String showEditForm(@PathVariable("id") UUID id, Model model) {
-    AttendanceRecord attendance = attendanceService.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("ID điểm danh không hợp lệ"));
-    model.addAttribute("attendance", attendance);
-
-    // Lấy classId từ ClassroomStudent hoặc AttendanceRecord (tùy cấu trúc)
-    UUID classId = attendance.getStudent().getClassroomStudents().get(0).getClassroom().getId();
-    model.addAttribute("classId", classId);
-
-    return "attendance/edit";
-}
-// Cập nhật điểm danh
-@PostMapping("/update")
-public String updateAttendance(
-        @RequestParam("id") UUID id,
-        @RequestParam("classId") UUID classId,
-        @RequestParam("status") String status,
-        @RequestParam("note") String note,
-        RedirectAttributes redirectAttributes) {
-
-    AttendanceRecord attendance = attendanceService.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("ID điểm danh không hợp lệ"));
-
-    // Xử lý trạng thái
-    if ("present".equals(status)) {
-        attendance.setPresent(true);
-        attendance.setPermission(false);
-    } else if ("absent".equals(status)) {
-        attendance.setPresent(false);
-        attendance.setPermission(false);
-    } else if ("permission".equals(status)) {
-        attendance.setPresent(false);
-        attendance.setPermission(true);
+    public String showAttendanceResult(@RequestParam("classId") UUID classId,
+                                      @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+                                      Model model,
+                                      HttpSession session,
+                                      RedirectAttributes redirectAttributes) {
+        // Kiểm tra quyền
+        if (!isTeacherOrAdmin(session)) {
+            redirectAttributes.addFlashAttribute("error", "Bạn không có quyền truy cập chức năng này");
+            return "redirect:/login";
+        }
+        
+        List<AttendanceRecord> records = attendanceService.getAttendanceByClassroomAndDate(classId, date);
+        Classroom classroom = classroomService.findById(classId).orElse(null);
+        model.addAttribute("records", records);
+        model.addAttribute("classroom", classroom);
+        model.addAttribute("date", date);
+        return "attendance/result";
     }
 
-    attendance.setNote(note);
-    attendanceService.save(attendance);
 
-    redirectAttributes.addFlashAttribute("success", "Cập nhật điểm danh thành công!");
-    // Quay lại trang kết quả điểm danh của lớp và ngày vừa sửa
-    return "redirect:/attendance/result?classId=" + classId + "&date=" + attendance.getDate();
-}
+
+
+// Sửa điểm danh
+@GetMapping("/edit/{id}")
+    public String showEditForm(@PathVariable("id") UUID id, Model model,
+                              HttpSession session, RedirectAttributes redirectAttributes) {
+        // Kiểm tra quyền
+        if (!isTeacherOrAdmin(session)) {
+            redirectAttributes.addFlashAttribute("error", "Bạn không có quyền chỉnh sửa điểm danh");
+            return "redirect:/login";
+        }
+        
+        AttendanceRecord attendance = attendanceService.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("ID điểm danh không hợp lệ"));
+        model.addAttribute("attendance", attendance);
+
+        UUID classId = attendance.getStudent().getClassroomStudents().get(0).getClassroom().getId();
+        model.addAttribute("classId", classId);
+
+        return "attendance/edit";
+    }
+// Cập nhật điểm danh
+@PostMapping("/update")
+    public String updateAttendance(
+            @RequestParam("id") UUID id,
+            @RequestParam("classId") UUID classId,
+            @RequestParam("status") String status,
+            @RequestParam("note") String note,
+            RedirectAttributes redirectAttributes,
+            HttpSession session) {
+
+        // Kiểm tra quyền
+        if (!isTeacherOrAdmin(session)) {
+            redirectAttributes.addFlashAttribute("error", "Bạn không có quyền chỉnh sửa điểm danh");
+            return "redirect:/login";
+        }
+        
+        AttendanceRecord attendance = attendanceService.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("ID điểm danh không hợp lệ"));
+
+        // Xử lý trạng thái
+        if ("present".equals(status)) {
+            attendance.setPresent(true);
+            attendance.setPermission(false);
+        } else if ("absent".equals(status)) {
+            attendance.setPresent(false);
+            attendance.setPermission(false);
+        } else if ("permission".equals(status)) {
+            attendance.setPresent(false);
+            attendance.setPermission(true);
+        }
+
+        attendance.setNote(note);
+        attendanceService.save(attendance);
+
+        redirectAttributes.addFlashAttribute("success", "Cập nhật điểm danh thành công!");
+        return "redirect:/attendance/result?classId=" + classId + "&date=" + attendance.getDate();
+    }
 
 // Xóa điểm danh theo ngày
 
 
 // Xóa tất cả điểm danh của một lớp trong một ngày
 @PostMapping("/deleteByClassAndDate")
-public String deleteByClassAndDate(@RequestParam("classId") UUID classId,
-                                   @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-                                   RedirectAttributes redirectAttributes) {
-    int count = attendanceService.deleteByClassAndDate(classId, date);
-    if (count > 0) {
-        redirectAttributes.addFlashAttribute("success", "Đã xóa " + count + " bản ghi điểm danh!");
-    } else {
-        redirectAttributes.addFlashAttribute("error", "Không có bản ghi nào để xóa!");
+    public String deleteByClassAndDate(@RequestParam("classId") UUID classId,
+                                      @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+                                      RedirectAttributes redirectAttributes,
+                                      HttpSession session) {
+        // Kiểm tra quyền
+        if (!isTeacherOrAdmin(session)) {
+            redirectAttributes.addFlashAttribute("error", "Bạn không có quyền xóa điểm danh");
+            return "redirect:/login";
+        }
+        
+        int count = attendanceService.deleteByClassAndDate(classId, date);
+        if (count > 0) {
+            redirectAttributes.addFlashAttribute("success", "Đã xóa " + count + " bản ghi điểm danh!");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Không có bản ghi nào để xóa!");
+        }
+        return "redirect:/attendance/report/" + classId;
     }
-    return "redirect:/attendance/report/" + classId;
-}
+
+    @GetMapping("/student")
+    public String showStudentAttendance(Model model, HttpSession session, RedirectAttributes redirectAttributes) {
+        // Kiểm tra nếu không phải là học sinh
+        if (!hasRole(session, "student")) {
+            redirectAttributes.addFlashAttribute("error", "Bạn cần đăng nhập với tư cách học sinh để xem thông tin điểm danh");
+            return "redirect:/login";
+        }
+        
+        // Lấy thông tin học sinh từ session
+        String studentIdStr = (String) session.getAttribute("currentUserId");
+        if (studentIdStr == null) {
+            redirectAttributes.addFlashAttribute("error", "Không thể xác định thông tin học sinh. Vui lòng đăng nhập lại.");
+            return "redirect:/login";
+        }
+        
+        UUID studentId = UUID.fromString(studentIdStr);
+        Student student = studentService.findById(studentId).orElse(null);
+        
+        if (student == null) {
+            redirectAttributes.addFlashAttribute("error", "Không tìm thấy thông tin học sinh");
+            return "redirect:/login";
+        }
+        
+        // Lấy danh sách điểm danh của học sinh
+        List<AttendanceRecord> attendanceRecords = attendanceService.getAttendanceByStudentId(studentId);
+        
+        // Thống kê điểm danh
+        int totalDays = attendanceRecords.size();
+        int presentDays = 0;
+        int absentDays = 0;
+        int permissionDays = 0;
+        
+        for (AttendanceRecord record : attendanceRecords) {
+            if (record.isPresent()) {
+                presentDays++;
+            } else if (record.hasPermission()) {
+                permissionDays++;
+            } else {
+                absentDays++;
+            }
+        }
+        
+        model.addAttribute("student", student);
+        model.addAttribute("attendanceRecords", attendanceRecords);
+        model.addAttribute("totalDays", totalDays);
+        model.addAttribute("presentDays", presentDays);
+        model.addAttribute("absentDays", absentDays);
+        model.addAttribute("permissionDays", permissionDays);
+        
+        return "attendance/index-student";
+    }
+
+
+
+
      //Xử lý xuất báo cáo điểm danh
      
     /*@PostMapping("/report")

@@ -171,6 +171,15 @@ public int deleteByClassAndDate(UUID classId, LocalDate date) {
         }
     }
 
+
+/**
+ * Lấy tất cả bản ghi điểm danh của một học sinh
+ */
+public List<AttendanceRecord> getAttendanceByStudentId(UUID studentId) {
+    return repo.findByStudentIdOrderByDateDesc(studentId);
+}
+
+
     /**
      * Lấy tổng số buổi vắng của học sinh
      */

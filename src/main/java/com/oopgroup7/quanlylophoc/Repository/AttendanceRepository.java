@@ -32,4 +32,5 @@ List<AttendanceRecord> findByClassroomIdAndDate(@Param("classroomId") UUID class
     List<AttendanceRecord> findByStudentIdAndDate(UUID studentId, LocalDate date);
     List<AttendanceRecord> findByStudentIdAndDateBetween(UUID studentId, LocalDate startDate, LocalDate endDate);
     List<AttendanceRecord> findByDate(LocalDate date);
+    List<AttendanceRecord> findByStudentIdOrderByDateDesc(UUID studentId);
 }
