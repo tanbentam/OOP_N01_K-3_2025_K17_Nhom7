@@ -14,8 +14,8 @@ public class TestStudent {
         assertNotNull(student.getId());
         assertEquals("Tân", student.getName());
         assertEquals(20, student.getAge());
-        assertEquals("Math", student.getScore().getsubject());
-        assertEquals(8.5, student.getScore().getscoreValue(), 0.001);
+        assertEquals("Math", student.getScore().getSubject());
+        assertEquals(8.5, student.getScore().getScoreValue(), 0.001);
     }
 
     @Test
@@ -36,7 +36,7 @@ public class TestStudent {
     public void testSetScore() {
         Student student = new Student("Tân", 20, "Math", 8.5);
         student.setscore("Physics", 9.0);
-        assertEquals("Physics", student.getScore().getsubject());
-        assertEquals(9.0, student.getScore().getscoreValue(), 0.001);
+        assertEquals("Physics", student.getScore().getSubject());
+        assertEquals(9.0, student.getScore().getScoreValue(), 0.001);
     }
 }

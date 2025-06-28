@@ -1,21 +1,170 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Thêm/Sửa lớp học</title>
     <meta charset="UTF-8">
+    <title>Thêm / Sửa lớp học</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+        }
+
+        main {
+            max-width: 700px;
+            margin: 30px auto;
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            margin-top: 12px;
+        }
+
+        input, select {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            margin-top: 6px;
+        }
+
+        select[multiple] {
+            height: 160px;
+            background-color: #fafafa;
+            overflow-y: auto;
+        }
+
+        .form-actions {
+            margin-top: 24px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .form-actions button,
+        .form-actions a {
+            padding: 10px 16px;
+            font-size: 16px;
+            text-decoration: none;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .form-actions button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .form-actions a {
+            background-color: #ccc;
+            color: black;
+        }
+
+        .form-actions button:hover,
+        .form-actions a:hover {
+            opacity: 0.9;
+        }
+
+        .selected-students {
+            margin-top: 20px;
+            padding: 16px;
+            background-color: #f8f9fb;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .selected-students ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 10px;
+        }
+
+        .selected-students li {
+            padding: 6px 12px;
+            margin-bottom: 6px;
+            background-color: #eef1f7;
+            border-radius: 6px;
+        }
+
+        .no-students {
+            color: #999;
+            font-style: italic;
+            margin-top: 6px;
+        }
+    </style>
 </head>
 <body>
+<header>
+    <h1>📝 Quản lý lớp học</h1>
+</header>
+<!-- alo lao -->
+<main>
     <h2 th:text="${classroom.id == null ? 'Thêm lớp học' : 'Sửa lớp học'}"></h2>
-    <form th:action="@{${classroom.id == null} ? '/classrooms/add' : '/classrooms/edit'}" th:object="${classroom}" method="post">
+
+    <form th:action="@{${classroom.id == null} ? '/classrooms/add' : '/classrooms/edit'}"
+          th:object="${classroom}" method="post">
+
         <input type="hidden" th:field="*{id}" />
-        <label>Tên lớp:</label>
-        <input type="text" th:field="*{className}" required/><br>
-        <label>Giáo viên chủ nhiệm:</label>
-        <select th:field="*{teacher.id}">
-            <option th:each="teacher : ${teachers}" th:value="${teacher.id}" th:text="${teacher.name}"></option>
-        </select><br>
-        <button type="submit">Lưu</button>
-        <a th:href="@{/classrooms}">Quay lại</a>
+
+        <label for="className">Tên lớp:</label>
+        <input type="text" id="className" th:field="*{className}" required placeholder="VD: 12A1" />
+
+        <label for="teacher">Giáo viên chủ nhiệm:</label>
+        <select id="teacher" th:field="*{teacher.id}">
+            <option value="">-- Chọn giáo viên --</option>
+            <option th:each="t : ${teacher}"
+                    th:value="${t.id}"
+                    th:text="${t.name}"></option>
+        </select>
+
+        <label for="student">Danh sách học sinh:</label>
+        <select id="student" th:field="*{studentList}" multiple>
+            <option th:each="s : ${student}"
+                    th:value="${s.id}"
+                    th:text="${s.name}"></option>
+        </select>
+
+        <div class="selected-students">
+            <strong style="color: #4a4a4a; font-size: 18px;">✅ Học sinh đã chọn:</strong>
+            <ul>
+                <li th:each="s : ${classroom.studentList}"
+                    th:text="${s.name} + ' (' + ${s.age} + ' tuổi)'">
+                </li>
+                <li th:if="${#lists.isEmpty(classroom.studentList)}" class="no-students">
+                    Chưa có học sinh nào được chọn.
+                </li>
+            </ul>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit">💾 Lưu</button>
+            <a th:href="@{/classrooms}">⬅️ Quay lại</a>
+        </div>
     </form>
+</main>
 </body>
 </html>

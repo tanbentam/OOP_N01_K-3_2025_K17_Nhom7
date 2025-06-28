@@ -2,7 +2,49 @@ package com.oopgroup7.quanlylophoc.Repository;
 
 import com.oopgroup7.quanlylophoc.Model.Teacher;
 import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.UUID;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+//thiết kế lại file teacherRepository.java
+@Repository
 public interface TeacherRepository extends JpaRepository<Teacher, UUID> {
+    
+   // Phương thức cũ - có thể gây lỗi
+    Optional<Teacher> findByUsername(String username);
+    
+    // THÊM PHƯƠNG THỨC MỚI - trả về List và sắp xếp theo ID
+    @Query("SELECT t FROM Teacher t WHERE t.username = :username ORDER BY t.id ASC")
+    List<Teacher> findAllByUsernameOrderById(@Param("username") String username);
+    
+    // HOẶC dùng method name query
+    List<Teacher> findAllByUsernameOrderByIdAsc(String username);
+
+    @Query("SELECT t FROM Teacher t WHERE t.username = :username ORDER BY t.id ASC")
+    Optional<Teacher> findFirstByUsername(@Param("username") String username);
+
+    // Tìm kiếm giáo viên theo tên (không phân biệt hoa thường)
+    @Query("SELECT t FROM Teacher t WHERE LOWER(t.name) LIKE LOWER(CONCAT('%', :name, '%'))")
+    List<Teacher> findByNameContainingIgnoreCase(@Param("name") String name);
+    
+    // Tìm giáo viên theo môn học
+    @Query("SELECT t FROM Teacher t WHERE LOWER(t.subject) LIKE LOWER(CONCAT('%', :subject, '%'))")
+    List<Teacher> findBySubjectContainingIgnoreCase(@Param("subject") String subject);
+    
+    // Tìm kiếm giáo viên theo khoa/bộ môn
+    @Query("SELECT t FROM Teacher t WHERE LOWER(t.department) LIKE LOWER(CONCAT('%', :department, '%'))")
+    List<Teacher> findByDepartmentContainingIgnoreCase(@Param("department") String department);
+    
+    // Tìm kiếm nâng cao với nhiều tiêu chí
+    @Query("SELECT t FROM Teacher t WHERE " +
+           "(:name IS NULL OR :name = '' OR LOWER(t.name) LIKE LOWER(CONCAT('%', :name, '%'))) AND " +
+           "(:department IS NULL OR :department = '' OR LOWER(t.department) LIKE LOWER(CONCAT('%', :department, '%'))) AND " +
+           "(:subject IS NULL OR :subject = '' OR LOWER(t.subject) LIKE LOWER(CONCAT('%', :subject, '%')))")
+    List<Teacher> searchTeachers(
+            @Param("name") String name, 
+            @Param("department") String department, 
+            @Param("subject") String subject);
 }

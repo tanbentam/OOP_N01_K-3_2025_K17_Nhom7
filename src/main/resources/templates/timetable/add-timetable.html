@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thêm Buổi Học</title>
+</head>
+<body>
+    <h1>Thêm Buổi Học</h1>
+    <form th:action="@{'/timetable/' + ${classId} + '/add'}" th:object="${schedule}" method="post">
+        <label>Ngày:</label>
+        <input type="text" th:field="*{dayOfWeek}" /><br/>
+        <label>Tiết:</label>
+        <input type="text" th:field="*{period}" /><br/>
+        <label>Môn học:</label>
+        <input type="text" th:field="*{subject}" /><br/>
+        <label>Giáo viên:</label>
+        <input type="text" th:field="*{teacherName}" /><br/>
+        <button type="submit">Lưu</button>
+    </form>
+</body>
+</html>

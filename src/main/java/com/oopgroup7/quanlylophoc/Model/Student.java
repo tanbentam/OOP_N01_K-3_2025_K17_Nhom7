@@ -1,39 +1,218 @@
 package com.oopgroup7.quanlylophoc.Model;
 
-import jakarta.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.io.Serializable;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 
 @Entity
+@Table(name = "students")
+
 public class Student implements Serializable {
-
-    private UUID id; // Mã định danh duy nhất cho học sinh
+private static final long serialVersionUID = 1L;
     
-    private String name;
-    private int age;
+    @Version
+    @Column(name = "version")
+    private Long version = 0L;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    private Score score; 
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<AttendanceRecord> attendanceRecords = new ArrayList<>();
-
-    public Student() {
-        // Default constructor for JPA
-        this.id = UUID.randomUUID(); // Tạo mã định danh duy nhất khi khởi tạo
+    // Getter và setter 
+    public Long getVersion() {
+        return version;
+    }
+    
+    public void setVersion(Long version) {
+        this.version = version;
     }
 
+   @Id
+   @GeneratedValue(strategy = GenerationType.AUTO)
+   @Column(name = "id", columnDefinition = "BINARY(16)")
+   private UUID id;
+    
+    @Column(nullable = false)
+    private String name;
+    
+    private int age;
+    
+    @Column(name = "date_of_birth")
+private LocalDate dateOfBirth;
+
+    
+// ...existing code...
+@ManyToOne
+@JoinColumn(name = "classroom_id", columnDefinition = "BINARY(16)")
+private Classroom classroom;
+public Classroom getClassroom() {
+    return classroom;
+}
+
+public void setClassroom(Classroom classroom) {
+    this.classroom = classroom;
+}
+// ...existing code...
+
+    @Column(unique = true)
+    private String username;
+    
+    private String password;
+
+    @Column(name = "address", length = 500)
+private String address;
+
+    @Column(name = "email")
+private String email;
+
+    
+    @Column(name = "gender")
+private String gender;
+
+    @Column(name = "student_code", unique = true)
+    private String studentCode;
+    
+    @Column(name = "class_name")
+    private String className;
+    
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "score_id")
+    private Score score; 
+
+@OneToMany(mappedBy = "student")
+    private List<ClassroomStudent> classroomStudents = new ArrayList<>();
+
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "student_id")
+    
+    private List<AttendanceRecord> attendanceRecords = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "studentList")
+    private List<Classroom> classrooms = new ArrayList<>();
+
+    public Student() {
+
+    }
+    // Constructor cập nhật với các trường mới
+    public Student(String name, int age, String subject, double scoreValue, 
+                  String studentCode, String className, String phoneNumber) {
+        this.name = name;
+        this.age = age;
+        this.studentCode = studentCode;
+        this.className = className;
+        this.phoneNumber = phoneNumber;
+        
+        if (subject != null && scoreValue >= 0) {
+            this.score = new Score(null, subject, scoreValue);
+        }
+    }
+
+    // Constructor cũ giữ lại để tương thích
     public Student(String name, int age, String subject, double scoreValue) {
         this.name = name;
         this.age = age;
-        this.score = new Score(null, subject, scoreValue);
+        if (subject != null && scoreValue >= 0) {
+            this.score = new Score(null, subject, scoreValue);
+        }
     }
 
-    // Getter methods
+    public List<ClassroomStudent> getClassroomStudents() {
+        return classroomStudents;
+    }
+
+    public void setClassroomStudents(List<ClassroomStudent> classroomStudents) {
+        this.classroomStudents = classroomStudents;
+    }
+
+    public LocalDate getDateOfBirth() {
+    return dateOfBirth;
+}
+
+public void setDateOfBirth(LocalDate dateOfBirth) {
+    this.dateOfBirth = dateOfBirth;
+}
+
+    public String getAddress() {
+    return address;
+}
+
+public void setAddress(String address) {
+    this.address = address;
+}
+    public String getEmail() {
+    return email;
+}
+
+public void setEmail(String email) {
+    this.email = email;
+}
+
+    public String getGender() {
+    return gender;
+}
+
+public void setGender(String gender) {
+    this.gender = gender;
+}
+
+    public String getStudentCode() {
+        return studentCode;
+    }
+
+    public void setStudentCode(String studentCode) {
+        this.studentCode = studentCode;
+    }
+    
+    public String getClassName() {
+        return className;
+    }
+    
+    public void setClassName(String className) {
+        this.className = className;
+    }
+    
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+    
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    // Getter và Setter methods đã có
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public UUID getId() {
         return id;
     }
@@ -73,14 +252,21 @@ public class Student implements Serializable {
     public void setAge(int age) {
         this.age = age;
     }
+    
     public void setscore(String subject, double scoreValue) {
-        this.score.setsubject(subject);
-        this.score.setscoreValue(scoreValue);
+    if (this.score == null) {
+        this.score = new Score(null, subject, scoreValue);
+    } else {
+        this.score.setSubject(subject);
+        this.score.setScoreValue(scoreValue);
     }
+}
+    
     //thêm điểm danh
-     public void markAttendance(LocalDate date, boolean isPresent, boolean hasPermission) {
+    public void markAttendance(LocalDate date, boolean isPresent, boolean hasPermission) {
         attendanceRecords.add(new AttendanceRecord(date, isPresent, hasPermission));
     }
+    
     //ktra hsinh có mặt vào ngày nào
     public boolean isPresentOnDate(LocalDate date) {
         for (AttendanceRecord record : attendanceRecords) {
@@ -88,11 +274,11 @@ public class Student implements Serializable {
                 return record.isPresent();
             }
         }
-        return false; // nếu không có bản ghi thì xem như nghỉ
+        return false; 
     }
 
     //néu nghỉ học thì có phép không
-     public boolean hasPermissionOnDate(LocalDate date) {
+    public boolean hasPermissionOnDate(LocalDate date) {
         for (AttendanceRecord record : attendanceRecords) {
             if (record.getDate().equals(date)) {
                 return record.hasPermission();
@@ -100,10 +286,32 @@ public class Student implements Serializable {
         }
         return false;
     } 
-       public void printInfo() {
-        System.out.println("Student ID: " + id);
-        System.out.println("Name: " + name);
-        System.out.println("Age: " + age);
-        System.out.println("Score: " + score);
+    
+    public void printInfo() {
+    System.out.println("Student ID: " + id);
+    System.out.println("Student Code: " + studentCode);
+    System.out.println("Name: " + name);
+    System.out.println("Age: " + age);
+    System.out.println("Class: " + className);
+    System.out.println("Phone Number: " + phoneNumber);
+    if (score != null) {
+        System.out.println("Subject: " + score.getSubject());
+        System.out.println("Score: " + score.getScoreValue());
+    } else {
+        System.out.println("Score: Not available");
+    }
+}
+
+    
+    @Override
+    public String toString() {
+        return "Student{" +
+                "id=" + id +
+                ", studentCode='" + studentCode + '\'' +
+                ", name='" + name + '\'' +
+                ", age=" + age +
+                ", className='" + className + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                '}';
     }
 }
