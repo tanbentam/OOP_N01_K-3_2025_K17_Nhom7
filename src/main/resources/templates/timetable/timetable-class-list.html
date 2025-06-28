@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách Lớp - Thời Khóa Biểu</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7fa;
+            padding: 2rem;
+        }
+        h1 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #ccc;
+        }
+        th {
+            background-color: #667eea;
+            color: white;
+        }
+        a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>📚 Danh sách lớp học</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Tên lớp</th>
+                <th>Giáo viên chủ nhiệm</th>
+                <th>Xem thời khóa biểu</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="cls : ${classes}">
+                <td th:text="${cls.className}">Tên lớp</td>
+                <td th:text="${cls.teacher.name}">Tên GV</td>
+                <td>
+                    <a th:href="@{|/timetable/${cls.id}|}">Xem</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <a class="back-link" href="/">⬅ Quay lại</a>
+</body>
+</html>
+
