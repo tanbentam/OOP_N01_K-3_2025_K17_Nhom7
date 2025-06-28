@@ -58,10 +58,22 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="/students">Học sinh</a>
+                        <a class="nav-link" href="/students">Học Sinh</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="/scores">Điểm số</a>
+                        <a class="nav-link" href="/classrooms">Lớp Học</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/timetable">Thời Khóa Biểu</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/scores">Điểm Số</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="/attendance">Điểm Danh</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/teachers">Giáo Viên</a>
                     </li>
                 </ul>
             </div>
@@ -131,54 +143,53 @@
         
         <!-- Table Section -->
         <div class="table-responsive">
-            <table class="table table-striped table-hover align-middle mb-0">
-                <thead>
-                    <tr>
-                        <th width="5%">STT</th>
-                        <th width="10%">Mã học sinh</th>
-                        <th width="20%">Tên học sinh</th>
-                        <th width="20%">Lớp</th>
-                        <th width="15%">Môn học</th>
-                        <th width="10%">Điểm</th>
-                        <th width="20%">Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="score, iterStat : ${scores}">
-                        <td th:text="${iterStat.count}"></td>
-                        <td th:text="${score.student.studentCode}"></td>
-                        <td th:text="${score.student.name}"></td>
-                        <td th:text="${score.student.className}"></td>
-                        <td th:text="${score.subject}"></td>
-                        <td>
-                            <span class="badge"
-                                  th:classappend="${score.value >= 8.5 ? 'bg-success' : 
-                                                 (score.value >= 7.0 ? 'bg-info' : 
-                                                 (score.value >= 5.0 ? 'bg-warning' : 'bg-danger'))}"
-                                  th:text="${score.value}">
-                            </span>
-                        </td>
-                        <td>
-                            <a th:href="@{'/scores/form/' + ${score.id}}" class="btn btn-outline-primary btn-action" title="Sửa">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <a th:href="@{'/scores/delete/' + ${score.id}}" class="btn btn-outline-danger btn-action" 
-                               onclick="return confirm('Bạn có chắc muốn xóa điểm này?');" title="Xóa">
-                                <i class="fas fa-trash"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    <tr th:if="${#lists.isEmpty(scores)}">
-                        <td colspan="7" class="empty-data">
-                            <i class="fas fa-database fa-3x mb-3"></i>
-                            <p>Không có dữ liệu điểm nào. Bạn có thể thêm điểm mới bằng nút "Thêm điểm mới".</p>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        
-        
+    <table class="table table-striped table-hover align-middle mb-0">
+        <thead>
+            <tr>
+                <th width="5%">STT</th>
+                <th width="10%">Mã học sinh</th>
+                <th width="20%">Tên học sinh</th>
+                <th width="20%">Lớp</th>
+                <th width="15%">Môn học</th>
+                <th width="10%">Điểm</th>
+                <th width="20%">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="score, iterStat : ${scores}">
+                <td th:text="${iterStat.count}"></td>
+                <td th:text="${score.student.studentCode}"></td>
+                <td th:text="${score.student.name}"></td>
+                <td th:text="${score.student.className}"></td>
+                <td th:text="${score.subject}"></td>
+                <td>
+                    <span class="badge"
+                          th:classappend="${score.value >= 8.5 ? 'bg-success' : 
+                                         (score.value >= 7.0 ? 'bg-info' : 
+                                         (score.value >= 5.0 ? 'bg-warning' : 'bg-danger'))}"
+                          th:text="${score.value}">
+                    </span>
+                </td>
+                <td>
+                    <!-- Thay đổi URL từ /scores/form/ thành /scores/edit/ -->
+                    <a th:href="@{'/scores/edit/' + ${score.id}}" class="btn btn-outline-primary btn-action" title="Sửa">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a th:href="@{'/scores/delete/' + ${score.id}}" class="btn btn-outline-danger btn-action" 
+                       onclick="return confirm('Bạn có chắc muốn xóa điểm này?');" title="Xóa">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(scores)}">
+                <td colspan="7" class="empty-data">
+                    <i class="fas fa-database fa-3x mb-3"></i>
+                    <p>Không có dữ liệu điểm nào. Bạn có thể thêm điểm mới bằng nút "Thêm điểm mới".</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
         
         <!-- Thống kê đơn giản -->
         <div class="card mt-4">

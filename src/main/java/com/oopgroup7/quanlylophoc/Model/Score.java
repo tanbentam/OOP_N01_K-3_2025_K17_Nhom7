@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.UUID;
 
+
 @Entity
 @Table(name = "scores")
 public class Score implements Serializable {

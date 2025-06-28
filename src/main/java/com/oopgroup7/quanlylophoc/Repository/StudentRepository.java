@@ -48,6 +48,10 @@ public interface StudentRepository extends JpaRepository<Student, UUID> {
     @Query("SELECT COUNT(cs) FROM ClassroomStudent cs WHERE cs.student.id = :studentId")
     Long countClassroomRelationships(@Param("studentId") UUID studentId);
     
+    // Tìm học sinh theo ID lớp học
+    @Query("SELECT s FROM Student s JOIN s.classroomStudents cs WHERE cs.classroom.id = :classroomId")
+    List<Student> findByClassroomId(@Param("classroomId") UUID classroomId);
+    
     // Tìm kiếm nâng cao với nhiều tiêu chí
     @Query("SELECT s FROM Student s WHERE " +
            "(:name IS NULL OR :name = '' OR LOWER(s.name) LIKE LOWER(CONCAT('%', :name, '%'))) AND " +
@@ -109,14 +113,13 @@ public interface StudentRepository extends JpaRepository<Student, UUID> {
     
     // Lấy danh sách các lớp học duy nhất
     @Query("SELECT DISTINCT s.className FROM Student s WHERE s.className IS NOT NULL AND s.className <> '' ORDER BY s.className")
-  List<String> findDistinctClassNames();
+    List<String> findDistinctClassNames();
 
- // Kiểm tra học sinh với version cụ thể
-   @Query("SELECT COUNT(s) > 0 FROM Student s WHERE s.id = :id AND s.version = :version")
-   boolean existsByIdAndVersion(@Param("id") UUID id, @Param("version") Long version);
+    // Kiểm tra học sinh với version cụ thể
+    @Query("SELECT COUNT(s) > 0 FROM Student s WHERE s.id = :id AND s.version = :version")
+    boolean existsByIdAndVersion(@Param("id") UUID id, @Param("version") Long version);
 
- // THÊM METHOD HỖ TRỢ XÓA
-  @Query("SELECT s FROM Student s LEFT JOIN FETCH s.classroomStudents WHERE s.id = :id")
-   Optional<Student> findByIdWithRelations(@Param("id") UUID id);
-
+    // THÊM METHOD HỖ TRỢ XÓA
+    @Query("SELECT s FROM Student s LEFT JOIN FETCH s.classroomStudents WHERE s.id = :id")
+    Optional<Student> findByIdWithRelations(@Param("id") UUID id);
 }

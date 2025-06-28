@@ -5,6 +5,11 @@ import com.oopgroup7.quanlylophoc.Model.Student;
 import com.oopgroup7.quanlylophoc.Repository.StudentRepository;
 import com.oopgroup7.quanlylophoc.Service.ScoreService;
 import com.oopgroup7.quanlylophoc.Service.StudentService;
+
+import java.util.UUID;
+
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -58,6 +63,44 @@ public String index(
     
     return "Score/index";
 }
+
+
+    //Hiển thị điểm cho học sinh
+    @GetMapping("/student")
+    public String viewStudentScores(HttpSession session, Model model) {
+    // Lấy ID của học sinh từ session
+    String studentIdStr = (String) session.getAttribute("currentUserId");
+    
+    // Nếu không có studentId trong session, chuyển hướng đến trang đăng nhập
+    if (studentIdStr == null) {
+        return "redirect:/login";
+    }
+    UUID studentId = UUID.fromString(studentIdStr);
+    // Lấy danh sách điểm của học sinh
+    List<Score> scores = scoreService.findByStudentId(studentId);
+    model.addAttribute("scores", scores);
+    
+    // Thêm thống kê 
+    long excellent = 0, good = 0, average = 0, poor = 0;
+    for (Score score : scores) {
+        if (score.getValue() >= 8.5) {
+            excellent++;
+        } else if (score.getValue() >= 7.0) {
+            good++;
+        } else if (score.getValue() >= 5.0) {
+            average++;
+        } else {
+            poor++;
+        }
+    }
+    
+    model.addAttribute("excellentCount", excellent);
+    model.addAttribute("goodCount", good);
+    model.addAttribute("averageCount", average);
+    model.addAttribute("poorCount", poor);
+    
+    return "Score/index-student";
+}
     
     // Hiển thị form thêm điểm
     @GetMapping("/form")
@@ -66,19 +109,44 @@ public String index(
         return "Score/form";
     }
     
-    // Hiển thị form sửa điểm
-    @GetMapping("/form/{id}")
-    public String showEditForm(@PathVariable("id") String id, Model model) {
-        try {
-            Score score = scoreService.findById(java.util.UUID.fromString(id))
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy điểm"));
-            model.addAttribute("score", score);
-            return "Score/form";
-        } catch (Exception e) {
-            return "redirect:/scores";
-        }
-    }
     
+    // Hiển thị form sửa điểm riêng
+@GetMapping("/edit/{id}")
+public String showEditScoreForm(@PathVariable("id") String id, Model model) {
+    try {
+        UUID scoreId = UUID.fromString(id);
+        Score score = scoreService.findById(scoreId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy điểm"));
+                
+        model.addAttribute("score", score);
+        return "Score/edit"; // Trang HTML riêng cho sửa điểm
+    } catch (Exception e) {
+        return "redirect:/scores";
+    }
+}
+
+// Xử lý yêu cầu sửa điểm
+@PostMapping("/edit")
+public String processEditScore(
+        @RequestParam("scoreId") String scoreId,
+        @RequestParam("value") Double value,
+        @RequestParam(value = "subject", required = false) String subject,
+        @RequestParam(value = "notes", required = false) String notes,
+        RedirectAttributes redirectAttributes) {
+    
+    try {
+        // Sửa điểm
+        UUID id = UUID.fromString(scoreId);
+        scoreService.editScore(id, value, subject, notes);
+        
+        redirectAttributes.addFlashAttribute("success", "Sửa điểm thành công!");
+        return "redirect:/scores";
+    } catch (Exception e) {
+        redirectAttributes.addFlashAttribute("error", 
+            "Lỗi khi sửa điểm: " + e.getMessage());
+        return "redirect:/scores/edit/" + scoreId;
+    }
+}
     // Xử lý lưu điểm mới
     @PostMapping("/save")
 public String saveScore(
@@ -116,34 +184,6 @@ public String saveScore(
     }
 }
     // Xử lý cập nhật điểm
-    @PostMapping("/update")
-    public String updateScore(@RequestParam("id") String id,
-                             @RequestParam("studentId") String studentId,
-                             @RequestParam("subject") String subject,
-                             @RequestParam("value") double value,
-                             @RequestParam(value = "notes", required = false) String notes,
-                             RedirectAttributes redirectAttributes) {
-        try {
-            Score score = scoreService.findById(java.util.UUID.fromString(id))
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy điểm"));
-            
-            Student student = studentService.findById(java.util.UUID.fromString(studentId))
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy học sinh"));
-            
-            score.setStudent(student);
-            score.setSubject(subject);
-            score.setValue(value);
-            score.setNotes(notes);
-            
-            scoreService.save(score);
-            redirectAttributes.addFlashAttribute("success", "Cập nhật điểm thành công!");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Lỗi khi cập nhật điểm: " + e.getMessage());
-        }
-        
-        return "redirect:/scores";
-    }
-
 
     // Thêm endpoint để hiển thị danh sách học sinh theo môn học
 @GetMapping("/by-subject")

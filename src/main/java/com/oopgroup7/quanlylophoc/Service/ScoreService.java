@@ -49,6 +49,42 @@ public class ScoreService {
         return scoreRepository.save(score);
     }
     
+// Cập nhật điểm đã tồn tại
+
+@Transactional
+public Score editScore(UUID scoreId, Double newValue, String subject, String notes) {
+    // Tìm điểm theo ID
+    Score existingScore = scoreRepository.findById(scoreId)
+            .orElseThrow(() -> new RuntimeException("Không tìm thấy điểm với ID: " + scoreId));
+    
+    // Cập nhật thông tin
+    if (newValue != null) {
+        existingScore.setValue(newValue);
+    }
+    
+    if (subject != null && !subject.isEmpty()) {
+        existingScore.setSubject(subject);
+    }
+    
+    
+    // Dùng phương thức setter phù hợp với entity của bạn
+    if (notes != null) {
+        try {
+            // Cố gắng sử dụng setNotes nếu có
+            existingScore.setNotes(notes);
+        } catch (Exception e) {
+            try {
+                // Cố gắng sử dụng setComment nếu có
+                existingScore.setNotes(notes);
+            } catch (Exception e2) {
+                System.out.println("Không tìm thấy phương thức setNotes hoặc setComment");
+            }
+        }
+    }
+    
+    // Lưu vào database
+    return scoreRepository.save(existingScore);
+}
     // Xóa điểm
     @Transactional
     public void delete(UUID id) {
@@ -128,4 +164,10 @@ public class ScoreService {
         
         return stats;
     }
+
+    @Transactional(readOnly = true)
+    public List<Score> findByStudentId(UUID studentId) {
+        return scoreRepository.findByStudentId(studentId);
+}
+
 }

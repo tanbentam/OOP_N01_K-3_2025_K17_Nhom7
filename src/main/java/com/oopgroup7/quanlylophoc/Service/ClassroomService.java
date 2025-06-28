@@ -2,11 +2,13 @@ package com.oopgroup7.quanlylophoc.Service;
 
 import com.oopgroup7.quanlylophoc.Model.Classroom;
 import com.oopgroup7.quanlylophoc.Model.Student;
+import com.oopgroup7.quanlylophoc.Model.Teacher;
 import com.oopgroup7.quanlylophoc.Model.ClassroomStudent;
 import com.oopgroup7.quanlylophoc.Model.ClassroomStudentId;
 import com.oopgroup7.quanlylophoc.Repository.ClassroomRepository;
 import com.oopgroup7.quanlylophoc.Repository.StudentRepository;
 import com.oopgroup7.quanlylophoc.Repository.ClassroomStudentRepository;
+import com.oopgroup7.quanlylophoc.Repository.TeacherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,9 +24,11 @@ public class ClassroomService {
     
     @Autowired
     private StudentRepository studentRepository;
-    
     @Autowired
     private ClassroomStudentRepository classroomStudentRepository;
+
+    @Autowired
+    private TeacherRepository teacherRepository;
 
     public ClassroomService(ClassroomRepository repo) {
         this.repo = repo;
@@ -42,14 +46,25 @@ public class ClassroomService {
 
     @Transactional
     public boolean save(Classroom classroom) {
-        try {
-            repo.save(classroom);
-            return true;
-        } catch (Exception e) {
-            System.err.println("Error Saving Classroom: " + e.getMessage());
-            return false;
+    try {
+        // Nếu teacher có id nhưng chưa có version, tìm teacher từ DB
+        if (classroom.getTeacher() != null && classroom.getTeacher().getId() != null 
+                && classroom.getTeacher().getVersion() == null) {
+            Optional<Teacher> teacherOpt = teacherRepository.findById(classroom.getTeacher().getId());
+            if (teacherOpt.isPresent()) {
+                classroom.setTeacher(teacherOpt.get()); // Dùng teacher từ DB có version đã được khởi tạo
+            } else {
+                // Nếu không tìm thấy, set version = 0
+                classroom.getTeacher().setVersion(0L);
+            }
         }
+        repo.save(classroom);
+        return true;
+    } catch (Exception e) {
+        System.err.println("Error Saving Classroom: " + e.getMessage());
+        return false;
     }
+}
 
     @Transactional
     public boolean delete(UUID id) {
@@ -122,8 +137,10 @@ public class ClassroomService {
         }
     }
     
-    @Transactional(readOnly = true)
+   @Transactional(readOnly = true)
     public Optional<Classroom> findByClassName(String className) {
-        return repo.findByClassNameIgnoreCase(className);
+        // Sửa để lấy lớp đầu tiên từ danh sách và bao trong Optional
+        List<Classroom> classrooms = repo.findByClassNameIgnoreCase(className);
+        return classrooms.isEmpty() ? Optional.empty() : Optional.of(classrooms.get(0));
     }
 }

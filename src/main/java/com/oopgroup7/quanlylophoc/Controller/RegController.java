@@ -70,9 +70,77 @@ public class RegController {
         return "register/teacher-form";
     }
     
-    /**
+    @PostMapping("/student")
+    public String registerStudent(@Valid @ModelAttribute Student student, 
+                              BindingResult result, 
+                              RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            return "register/student-form";
+        }
+    
+    try {
+        // Đảm bảo có username - nếu không có thì dùng studentCode hoặc tạo tự động
+        if (student.getUsername() == null || student.getUsername().trim().isEmpty()) {
+            if (student.getStudentCode() != null && !student.getStudentCode().trim().isEmpty()) {
+                student.setUsername(student.getStudentCode());
+            } else {
+                // Tạo username tự động từ tên
+                String username = student.getName().toLowerCase()
+                    .replaceAll("\\s+", "")
+                    .replaceAll("[^a-zA-Z0-9]", "");
+                student.setUsername(username + System.currentTimeMillis() % 1000);
+            }
+        }
+        
+        // Kiểm tra username trùng lặp
+        Optional<Student> existingStudent = studentService.findByUsername(student.getUsername());
+        if (existingStudent.isPresent()) {
+            result.rejectValue("username", "error.user", "Tên đăng nhập đã tồn tại");
+            return "register/student-form";
+        }
+
+        // Đặt password mặc định nếu không có
+        if (student.getPassword() == null || student.getPassword().trim().isEmpty()) {
+            String password = student.getName()
+                .replaceAll("\\s+", "")
+                .replaceAll("[àáạảãâầấậẩẫăằắặẳẵ]", "a")
+                .replaceAll("[èéẹẻẽêềếệểễ]", "e")
+                .replaceAll("[ìíịỉĩ]", "i")
+                .replaceAll("[òóọỏõôồốộổỗơờớợởỡ]", "o")
+                .replaceAll("[ùúụủũưừứựửữ]", "u")
+                .replaceAll("[ỳýỵỷỹ]", "y")
+                .replaceAll("[đ]", "d")
+                .toLowerCase();
+
+            if (password.length() < 3) {
+                password = password + "123"; // Thêm số để đảm bảo đủ độ dài
+            }
+            student.setPassword(password);
+        }
+
+        student.setId(null);
+        student.setVersion(null);
+        
+        Student savedStudent = studentService.saveNew(student);
+        logger.info("Đã đăng ký thành công học sinh: {} với username: {}", 
+                   savedStudent.getName(), savedStudent.getUsername());
+        
+        redirectAttributes.addFlashAttribute("success", 
+            "Đăng ký học sinh thành công! Username: " + savedStudent.getUsername() + 
+            ", Password: " + (savedStudent.getPassword() != null ? savedStudent.getPassword() : savedStudent.getName()));
+        
+        return "redirect:/login";
+    } catch (Exception e) {
+        logger.error("Lỗi khi đăng ký học sinh: {}", e.getMessage());
+        redirectAttributes.addFlashAttribute("error", "Đã xảy ra lỗi khi đăng ký: " + e.getMessage());
+        return "redirect:/register/student";
+    }
+}
+
+
+    /** PHIÊN BẢN CŨ 
      * Xử lý đăng ký học sinh
-     */
+     
     @PostMapping("/student")
     public String registerStudent(@Valid @ModelAttribute Student student, 
                                   BindingResult result, 
@@ -97,11 +165,109 @@ public class RegController {
             redirectAttributes.addFlashAttribute("error", "Đã xảy ra lỗi khi đăng ký: " + e.getMessage());
             return "redirect:/register/student";
         }
-    }
+    }*/
     
     /**
      * Xử lý đăng ký giáo viên
+     * Tạo username tự động từ tên, mật khẩu mặc định, và kiểm tra trùng lặp username.
      */
+
+    @PostMapping("/teacher")
+    public String registerTeacher(@Valid @ModelAttribute Teacher teacher, 
+                              BindingResult result, 
+                              RedirectAttributes redirectAttributes) {
+    
+    // Kiểm tra validation ban đầu
+    if (result.hasErrors()) {
+        // Loại bỏ lỗi username và password nếu chúng ta sẽ tự tạo
+        if ((teacher.getUsername() == null || teacher.getUsername().trim().isEmpty()) &&
+            (teacher.getPassword() == null || teacher.getPassword().trim().isEmpty())) {
+            
+            result.getFieldErrors().removeIf(error -> 
+                "username".equals(error.getField()) || "password".equals(error.getField()));
+            
+            if (result.hasErrors()) {
+                return "register/teacher-form";
+            }
+        } else {
+            return "register/teacher-form";
+        }
+    }
+    
+    try {
+        // Tạo username nếu chưa có
+        if (teacher.getUsername() == null || teacher.getUsername().trim().isEmpty()) {
+            String username = teacher.getName().toLowerCase()
+                .replaceAll("\\s+", "")
+                .replaceAll("[àáạảãâầấậẩẫăằắặẳẵ]", "a")
+                .replaceAll("[èéẹẻẽêềếệểễ]", "e")
+                .replaceAll("[ìíịỉĩ]", "i")
+                .replaceAll("[òóọỏõôồốộổỗơờớợởỡ]", "o")
+                .replaceAll("[ùúụủũưừứựửữ]", "u")
+                .replaceAll("[ỳýỵỷỹ]", "y")
+                .replaceAll("[đ]", "d")
+                .replaceAll("[^a-zA-Z0-9]", "");
+            
+            username = "gv" + username + (System.currentTimeMillis() % 1000);
+            teacher.setUsername(username);
+        }
+        
+        // Kiểm tra username trùng lặp
+        if (teacherService.findByUsername(teacher.getUsername()) != null) {
+            redirectAttributes.addFlashAttribute("error", 
+                "Username '" + teacher.getUsername() + "' đã tồn tại. Vui lòng chọn username khác.");
+            redirectAttributes.addFlashAttribute("teacher", teacher);
+            return "redirect:/register/teacher";
+        }
+        
+        // Tạo password nếu chưa có
+        if (teacher.getPassword() == null || teacher.getPassword().trim().isEmpty()) {
+            String password = teacher.getName()
+                .replaceAll("\\s+", "")
+                .replaceAll("[àáạảãâầấậẩẫăằắặẳẵ]", "a")
+                .replaceAll("[èéẹẻẽêềếệểễ]", "e")
+                .replaceAll("[ìíịỉĩ]", "i")
+                .replaceAll("[òóọỏõôồốộổỗơờớợởỡ]", "o")
+                .replaceAll("[ùúụủũưừứựửữ]", "u")
+                .replaceAll("[ỳýỵỷỹ]", "y")
+                .replaceAll("[đ]", "d")
+                .toLowerCase();
+            
+            if (password.length() < 3) {
+                password = password + "123";
+            }
+            
+            teacher.setPassword(password);
+        }
+        
+        teacherService.saveNew(teacher);
+        logger.info("Đã đăng ký thành công giáo viên: {} với username: {} và password: {}", 
+                   teacher.getName(), teacher.getUsername(), teacher.getPassword());
+        
+        redirectAttributes.addFlashAttribute("success", 
+            "Đăng ký giáo viên thành công!<br>" +
+            "Username: " + teacher.getUsername() + "<br>" +
+            "Password: " + teacher.getPassword() + "<br>" +
+            "Vui lòng ghi nhớ thông tin đăng nhập này!");
+        
+        return "redirect:/login";
+        
+    } catch (Exception e) {
+        logger.error("Lỗi khi đăng ký giáo viên: {}", e.getMessage(), e);
+        redirectAttributes.addFlashAttribute("error", 
+            "Đã xảy ra lỗi khi đăng ký: " + e.getMessage());
+        redirectAttributes.addFlashAttribute("teacher", teacher);
+        return "redirect:/register/teacher";
+    }
+}
+
+
+
+    /**
+     * Xử lý đăng ký giáo viên - Phiên bản cũ, không có tạo username từ tên và mật khẩu. ở đây mình sẽ cập nhật lại đăng ký giáo viên
+     * với các tính năng tương tự như học sinh, bao gồm tạo username tự động từ tên, mật khẩu mặc định,
+     * và kiểm tra trùng lặp username.
+     
     @PostMapping("/teacher")
     public String registerTeacher(@Valid @ModelAttribute Teacher teacher, 
                                   BindingResult result, 
@@ -116,17 +282,17 @@ public class RegController {
                 result.rejectValue("username", "error.user", "Tên đăng nhập đã tồn tại");
                 return "register/teacher-form";
             }
-            
-            teacherService.save(teacher);
-            logger.info("Đã đăng ký thành công giáo viên: {}", teacher.getName());
-            redirectAttributes.addFlashAttribute("success", "Đăng ký giáo viên thành công!");
-            return "redirect:/login";
-        } catch (Exception e) {
-            logger.error("Lỗi khi đăng ký giáo viên: {}", e.getMessage());
-            redirectAttributes.addFlashAttribute("error", "Đã xảy ra lỗi khi đăng ký: " + e.getMessage());
-            return "redirect:/register/teacher";
+            Teacher savedTeacher = teacherService.saveNew(teacher);
+        
+        logger.info("Đã đăng ký thành công giáo viên: {}", savedTeacher.getName());
+        redirectAttributes.addFlashAttribute("success", "Đăng ký giáo viên thành công!");
+        return "redirect:/login";
+    } catch (Exception e) {
+        logger.error("Lỗi khi đăng ký giáo viên: {}", e.getMessage());
+        redirectAttributes.addFlashAttribute("error", "Đã xảy ra lỗi khi đăng ký: " + e.getMessage());
+        return "redirect:/register/teacher";
         }
-    }
+    }*/
     
     /**
      * API để kiểm tra tính khả dụng của tên đăng nhập
