@@ -3,6 +3,7 @@ package com.oopgroup7.quanlylophoc.Service;
 import com.oopgroup7.quanlylophoc.Model.Teacher;
 import com.oopgroup7.quanlylophoc.Repository.TeacherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
@@ -27,8 +28,18 @@ public class TeacherService {
     // Tìm giáo viên theo username
     @Transactional(readOnly = true)
     public Teacher findByUsername(String username) {
-        return teacherRepository.findByUsername(username).orElse(null);
+        try {
+            return teacherRepository.findByUsername(username).orElse(null);
+        } catch (Exception e) {
+            // Nếu có lỗi (ví dụ username trùng), tìm theo cách khác
+            logger.warning("Lỗi khi tìm teacher theo username: " + username + ". Lỗi: " + e.getMessage());
+            
+            // Dùng query tự viết để lấy kết quả đầu tiên
+            List<Teacher> teachers = teacherRepository.findAllByUsernameOrderById(username);
+            return teachers.isEmpty() ? null : teachers.get(0);
+        }
     }
+    
     
     // Lấy danh sách tất cả giáo viên
     @Transactional(readOnly = true)
@@ -49,7 +60,7 @@ public class TeacherService {
     }
     
     @Transactional
-public Teacher saveNew(Teacher teacher) {
+    public Teacher saveNew(Teacher teacher) {
     try {
         // Tạo đối tượng mới hoàn toàn với ID mới
         Teacher newTeacher = new Teacher();
@@ -73,6 +84,37 @@ public Teacher saveNew(Teacher teacher) {
     } catch (Exception e) {
         logger.severe("Lỗi khi tạo mới giáo viên: " + e.getMessage());
         throw new RuntimeException("Lỗi khi tạo mới giáo viên: " + e.getMessage(), e);
+    }
+}
+
+    // Cập nhật thông tin giáo viên
+    @Transactional
+    public Teacher update(Teacher teacher) {
+    try {
+        // Kiểm tra giáo viên có tồn tại không
+        Optional<Teacher> existingOpt = teacherRepository.findById(teacher.getId());
+        if (!existingOpt.isPresent()) {
+            throw new RuntimeException("Không tìm thấy giáo viên để cập nhật!");
+        }
+        
+        Teacher existing = existingOpt.get();
+        
+        // Cập nhật thông tin từ form
+        existing.setName(teacher.getName());
+        existing.setSubject(teacher.getSubject());
+        existing.setDepartment(teacher.getDepartment());
+        existing.setUsername(teacher.getUsername());
+        existing.setPassword(teacher.getPassword());
+        
+        // GIỮ NGUYÊN ID VÀ VERSION ĐỂ CẬP NHẬT
+        // existing.setId() - KHÔNG THAY ĐỔI ID
+        // existing.setVersion() - Hibernate tự động tăng version
+        
+        return teacherRepository.save(existing); // CẬP NHẬT BẢN GHI HIỆN TẠI
+        
+    } catch (Exception e) {
+        logger.severe("Lỗi khi cập nhật giáo viên: " + e.getMessage());
+        throw new RuntimeException("Lỗi khi cập nhật giáo viên: " + e.getMessage(), e);
     }
 }
 

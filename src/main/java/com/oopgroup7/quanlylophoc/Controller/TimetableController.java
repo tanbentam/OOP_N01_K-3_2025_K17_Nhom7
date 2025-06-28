@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.oopgroup7.quanlylophoc.Model.Classroom;
-import com.oopgroup7.quanlylophoc.Model.Schedule;
+import com.oopgroup7.quanlylophoc.Model.Timetable;
 import com.oopgroup7.quanlylophoc.Repository.ClassroomRepository;
-import com.oopgroup7.quanlylophoc.Service.ScheduleService;
+import com.oopgroup7.quanlylophoc.Service.TimetableService;
 
 @Controller
 @RequestMapping("/timetable")
@@ -27,7 +27,7 @@ public class TimetableController {
     private ClassroomRepository classroomRepository;
 
     @Autowired
-    private ScheduleService scheduleService;
+    private TimetableService timetableService;
 
     // Hiển thị danh sách lớp
     @GetMapping
@@ -38,47 +38,45 @@ public class TimetableController {
     }
 
     // Hiển thị thời khóa biểu của một lớp
- @GetMapping("/{classId}")
-public String viewClassSchedule(@PathVariable UUID classId, Model model) {
-    Classroom classroom = classroomRepository.findById(classId).orElse(null);
-    List<Schedule> scheduleList = scheduleService.getSchedulesByClassId(classId);
+    @GetMapping("/{classId}")
+    public String viewClassTimetable(@PathVariable UUID classId, Model model) {
+        Classroom classroom = classroomRepository.findById(classId).orElse(null);
+        List<Timetable> timetableList = timetableService.getTimetablesByClassId(classId);
 
-    // Tạo Map<Thứ, Map<Tiết, Schedule>> để tra nhanh
-    Map<String, Map<Integer, Schedule>> scheduleMap = new HashMap<>();
-    for (Schedule s : scheduleList) {
-        String day = s.getDayOfWeek();    // "Thứ 2", ...
-        int period = s.getPeriod();       // kiểu int
+        // Tạo Map<Thứ, Map<Tiết, Timetable>> để tra nhanh
+        Map<String, Map<Integer, Timetable>> timetableMap = new HashMap<>();
+        for (Timetable t : timetableList) {
+            String day = t.getDayOfWeek();    // "Thứ 2", ...
+            int period = t.getPeriod();       // kiểu int
 
-        scheduleMap
-            .computeIfAbsent(day, k -> new HashMap<>())
-            .put(period, s);              // OK: put(Integer, Schedule)
+            timetableMap
+                .computeIfAbsent(day, k -> new HashMap<>())
+                .put(period, t);              // OK: put(Integer, Timetable)
+        }
+
+        model.addAttribute("classroom", classroom);
+        model.addAttribute("scheduleMap", timetableMap); // Giữ tên scheduleMap để tương thích với template
+        model.addAttribute("daysOfWeek", List.of("Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6"));
+        model.addAttribute("periods", List.of(1, 2, 3, 4, 5));
+
+        return "timetable/class-timetable";
     }
-
-    model.addAttribute("classroom", classroom);
-    model.addAttribute("scheduleMap", scheduleMap); // ✅ Thêm dòng này để Thymeleaf dùng được
-    model.addAttribute("daysOfWeek", List.of("Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6"));
-    model.addAttribute("periods", List.of(1, 2, 3, 4, 5));
-
-    return "timetable/class-timetable";
-}
-
 
     // Form thêm buổi học mới
     @GetMapping("/{classId}/add")
-    public String showAddScheduleForm(@PathVariable UUID classId, Model model) {
-        Schedule schedule = new Schedule();
-        model.addAttribute("schedule", schedule);
+    public String showAddTimetableForm(@PathVariable UUID classId, Model model) {
+        Timetable timetable = new Timetable();
+        model.addAttribute("schedule", timetable); // Giữ tên schedule để tương thích với template
         model.addAttribute("classId", classId);
         return "timetable/add-schedule";
     }
 
     // Xử lý lưu buổi học mới
     @PostMapping("/{classId}/add")
-    public String addSchedule(@PathVariable UUID classId, @ModelAttribute Schedule schedule) {
+    public String addTimetable(@PathVariable UUID classId, @ModelAttribute Timetable timetable) {
         Classroom classroom = classroomRepository.findById(classId).orElse(null);
-        schedule.setClassroom(classroom);
-        scheduleService.saveSchedule(classId, schedule);
+        timetable.setClassroom(classroom);
+        timetableService.saveTimetable(classId, timetable);
         return "redirect:/timetable/" + classId;
     }
 }
-

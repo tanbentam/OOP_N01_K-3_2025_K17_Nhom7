@@ -49,29 +49,6 @@ public class StudentService {
         return Optional.empty();
         }
     }
-
-
-
-    
-    /**
-     * Tìm học sinh theo ID
-     */
-    
-    /**
-     * Tìm học sinh theo ID lớp học
-     */
-    public List<Student> findStudentsByClassroomId(UUID classroomId) {
-        return studentRepository.findByClassroomId(classroomId);
-    }
-    
-    /**
-     * Tìm học sinh theo tên lớp học
-     */
-    public List<Student> findStudentsByClassName(String className) {
-        return studentRepository.findByClassName(className);
-    }
-    
-    
 public List<Student> findByEmail(String email) {
     if (email == null || email.trim().isEmpty()) {
         return List.of();
@@ -205,12 +182,12 @@ public Student saveNew(Student student) {
         newStudent.setUsername(student.getUsername());
         newStudent.setPassword(student.getPassword());
 
-        // Thiết lập các trường bắt buộc - SỬA LỖI TRÙNG LẬP
-        newStudent.setId(UUID.randomUUID()); // Tạo ID mới thay vì để null
+        // Thiết lập các trường bắt buộc
+        newStudent.setId(null); // Để Hibernate tự tạo
         newStudent.setVersion(0L); // Version khởi tạo
         
         Student savedStudent = studentRepository.save(newStudent);
-        
+
         // QUAN TRỌNG: Flush để đảm bảo dữ liệu được lưu vào DB
         studentRepository.flush();
         
@@ -278,17 +255,21 @@ public boolean delete(UUID id) {
 }
     // Các phương thức tìm kiếm mới
     @Transactional(readOnly = true)
-public Optional<Student> findByStudentCode(String studentCode) {
+    public Optional<Student> findByStudentCode(String studentCode) {
     if (studentCode == null || studentCode.trim().isEmpty()) {
         return Optional.empty();
     }
     
     try {
-        // Trả về trực tiếp Optional<Student> từ repository
-        return studentRepository.findByStudentCode(studentCode.trim());
+        List<Student> students = studentRepository.findAll();
+        Student student = students.stream()
+            .filter(s -> studentCode.equals(s.getStudentCode()))
+            .findFirst()
+            .orElse(null);
+        
+        return Optional.ofNullable(student);
     } catch (Exception e) {
         System.err.println("Lỗi khi tìm kiếm học sinh theo mã: " + e.getMessage());
-        e.printStackTrace();
         return Optional.empty();
     }
 }

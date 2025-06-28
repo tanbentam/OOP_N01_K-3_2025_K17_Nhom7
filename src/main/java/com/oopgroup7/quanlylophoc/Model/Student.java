@@ -21,7 +21,6 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 
-
 @Entity
 @Table(name = "students")
 

@@ -4,12 +4,16 @@ import java.io.Serializable;
 import java.util.UUID;
 
 import jakarta.persistence.Version;
-
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "teacher", 
+       uniqueConstraints = @UniqueConstraint(columnNames = "username"))
 public class Teacher implements Serializable {
     @Id
     @GeneratedValue
@@ -17,7 +21,10 @@ public class Teacher implements Serializable {
     private String name;
     private String subject;
     private String department;
+    
+    @Column(unique = true, nullable = false)
     private String username; // Thêm trường username
+    
     private String password; // Thêm trường password
     
 
