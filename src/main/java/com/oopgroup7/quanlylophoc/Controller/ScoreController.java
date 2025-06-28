@@ -61,7 +61,7 @@ public String index(
     model.addAttribute("averageCount", average);
     model.addAttribute("poorCount", poor);
     
-    return "Score/index";
+    return "score/index";
 }
 
 
@@ -99,14 +99,14 @@ public String index(
     model.addAttribute("averageCount", average);
     model.addAttribute("poorCount", poor);
     
-    return "Score/index-student";
+    return "score/index-student";
 }
     
     // Hiển thị form thêm điểm
     @GetMapping("/form")
     public String showForm(Model model) {
         model.addAttribute("score", new Score());
-        return "Score/form";
+        return "score/form";
     }
     
     
@@ -119,7 +119,7 @@ public String showEditScoreForm(@PathVariable("id") String id, Model model) {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy điểm"));
                 
         model.addAttribute("score", score);
-        return "Score/edit"; // Trang HTML riêng cho sửa điểm
+        return "score/edit"; // Trang HTML riêng cho sửa điểm
     } catch (Exception e) {
         return "redirect:/scores";
     }
@@ -224,7 +224,7 @@ public String getStudentsBySubject(
         model.addAttribute("totalStudents", subjectScores.size());
     }
     
-    return "Score/List";
+    return "score/list";
 }
     
     // Tìm kiếm điểm theo tên học sinh hoặc lớp
@@ -286,7 +286,7 @@ public String searchScores(
     model.addAttribute("averageCount", average);
     model.addAttribute("poorCount", poor);
     
-    return "Score/index";
+    return "score/index";
 }
     // Xóa điểm
     @GetMapping("/delete/{id}")
