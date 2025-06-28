@@ -49,6 +49,22 @@ public class StudentService {
         return Optional.empty();
         }
     }
+
+     /**
+     * Tìm học sinh theo ID lớp học
+     */
+    public List<Student> findStudentsByClassroomId(UUID classroomId) {
+        return studentRepository.findByClassroomId(classroomId);
+    }
+    
+    /**
+     * Tìm học sinh theo tên lớp học
+     */
+    public List<Student> findStudentsByClassName(String className) {
+        return studentRepository.findByClassName(className);
+    }
+
+
 public List<Student> findByEmail(String email) {
     if (email == null || email.trim().isEmpty()) {
         return List.of();
