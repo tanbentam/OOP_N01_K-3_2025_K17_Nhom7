@@ -72,7 +72,6 @@
         .back-link:hover {
             background: linear-gradient(135deg, #5a67d8, #6b46c1);
         }
-<<<<<<< HEAD
 
         .edit-icon {
             font-size: 0.8rem;
@@ -88,8 +87,6 @@
         .edit-icon:hover {
             background: #5a35b1;
         }
-=======
->>>>>>> nhanhCuaTanDZ
     </style>
 </head>
 <body>
@@ -97,13 +94,9 @@
     <h1 th:text="'Thời Khóa Biểu - ' + ${classroom.className}"></h1>
 
     <div class="teacher-info">
-<<<<<<< HEAD
         <p><strong>👨‍🏫 Giáo viên chủ nhiệm:</strong>
             <span th:text="${classroom.teacher.name}">Tên GV</span>
         </p>
-=======
-        <p><strong>👨‍🏫 Giáo viên chủ nhiệm:</strong> <span th:text="${classroom.teacher.name}">Tên GV</span></p>
->>>>>>> nhanhCuaTanDZ
     </div>
 
     <div class="student-list">
@@ -115,7 +108,6 @@
 
     <div class="schedule-table">
         <h3>🗓️ Thời khóa biểu:</h3>
-<<<<<<< HEAD
     <div style="margin-top: 1.5rem;">
         <a th:href="@{'/timetable/' + ${classroom.id} + '/add'}" class="back-link" style="margin-left: 1rem;">➕ Thêm buổi học</a>
     </div>
@@ -143,40 +135,13 @@
                     </div>
                 </td>
             </tr>
-=======
-        <table>
-            <thead>
-                <tr>
-                    <th>Tiết / Thứ</th>
-                    <th>Thứ 2</th>
-                    <th>Thứ 3</th>
-                    <th>Thứ 4</th>
-                    <th>Thứ 5</th>
-                    <th>Thứ 6</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="p : ${periods}">
-                    <td th:text="'Tiết ' + ${p}"></td>
-                    <td th:each="d : ${daysOfWeek}">
-                        <div th:with="s=${scheduleMap[d]?.get(p)}">
-                            <span th:if="${s != null}" th:text="${s.subject + ' - ' + s.teacherName}"></span>
-                            <span th:if="${s == null}">-</span>
-                        </div>
-                    </td>
-                </tr>
->>>>>>> nhanhCuaTanDZ
             </tbody>
         </table>
     </div>
 
-<<<<<<< HEAD
     <div style="margin-top: 1.5rem;">
         <a class="back-link" href="/timetable">⬅ Quay lại danh sách lớp</a>
     </div>
-=======
-    <a class="back-link" href="/timetable">⬅ Quay lại danh sách lớp</a>
->>>>>>> nhanhCuaTanDZ
 </div>
 </body>
 </html>
