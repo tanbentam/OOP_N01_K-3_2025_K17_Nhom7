@@ -137,8 +137,10 @@ public class ClassroomService {
         }
     }
     
-    @Transactional(readOnly = true)
+   @Transactional(readOnly = true)
     public Optional<Classroom> findByClassName(String className) {
-        return repo.findByClassNameIgnoreCase(className);
+        // Sửa để lấy lớp đầu tiên từ danh sách và bao trong Optional
+        List<Classroom> classrooms = repo.findByClassNameIgnoreCase(className);
+        return classrooms.isEmpty() ? Optional.empty() : Optional.of(classrooms.get(0));
     }
 }
