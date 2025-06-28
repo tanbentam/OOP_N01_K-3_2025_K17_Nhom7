@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sửa Buổi Học</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>Sửa Buổi Học</h1>
+        <form th:action="@{'/timetable/' + ${classId} + '/edit/' + ${schedule.id}}" th:object="${schedule}" method="post">
+            <div class="mb-3">
+                <label for="subject" class="form-label">Môn học:</label>
+                <input type="text" class="form-control" id="subject" th:field="*{subject}" required/>
+            </div>
+            
+            <div class="mb-3">
+                <label for="dayOfWeek" class="form-label">Ngày:</label>
+                <select class="form-select" id="dayOfWeek" th:field="*{dayOfWeek}">
+                    <option value="Thứ 2">Thứ 2</option>
+                    <option value="Thứ 3">Thứ 3</option>
+                    <option value="Thứ 4">Thứ 4</option>
+                    <option value="Thứ 5">Thứ 5</option>
+                    <option value="Thứ 6">Thứ 6</option>
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label for="period" class="form-label">Tiết:</label>
+                <select class="form-select" id="period" th:field="*{period}">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Lưu</button>
+            <a th:href="@{'/timetable/' + ${classId}}" class="btn btn-secondary">Quay lại</a>
+        </form>
+    </div>
+</body>
+</html>
