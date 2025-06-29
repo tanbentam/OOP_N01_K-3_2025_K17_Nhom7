@@ -151,10 +151,66 @@
             padding: 0.2rem 0.4rem;
             border-radius: 4px;
             text-decoration: none;
+            margin-right: 4px;
         }
 
         .edit-icon:hover {
             background: #5a35b1;
+        }
+
+        .delete-icon {
+            font-size: 0.8rem;
+            background: #dc2626;
+            color: white;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .delete-icon:hover {
+            background: #b91c1c;
+        }
+
+        .action-buttons {
+            margin-top: 4px;
+        }
+
+        .student-notice {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+            margin: 20px 0;
+        }
+
+        .student-notice h3 {
+            color: #1976d2;
+            margin-bottom: 8px;
+        }
+
+        .student-notice p {
+            color: #555;
+            margin: 0;
+        }
+
+        .alert {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
         }
 
         .cell-debug {
@@ -176,8 +232,12 @@
         </p>
     </div>
 
-    <!-- FORM THÊM TIẾT HỌC -->
-    <div class="form-section">
+    <!-- THÔNG BÁO SUCCESS/ERROR -->
+    <div class="alert alert-success" th:if="${success}" th:text="${success}"></div>
+    <div class="alert alert-error" th:if="${error}" th:text="${error}"></div>
+
+    <!-- FORM THÊM TIẾT HỌC - CHỈ TEACHER/ADMIN -->
+    <div class="form-section" th:if="${userRole == 'teacher' or userRole == 'admin'}">
         <h3>➕ Thêm tiết học mới</h3>
         <form th:action="@{'/timetable/' + ${classroom.id} + '/add'}" method="post">
             <div class="form-row">
@@ -218,8 +278,7 @@
             </div>
         </form>
     </div>
-
-    <!-- BẢNG THỜI KHÓA BIỂU -->
+        <!-- BẢNG THỜI KHÓA BIỂU -->
     <div class="schedule-table">
         <h3>🗓️ Thời khóa biểu:</h3>
 
@@ -248,7 +307,14 @@
                                 <div th:with="timetable=${daySchedules.get(p)}" class="schedule-content">
                                     <div><strong th:text="${timetable.subject}">Subject</strong></div>
                                     <div><small th:text="${timetable.teacherName}">Teacher</small></div>
-                                    <a th:href="@{'/timetable/' + ${classroom.id} + '/edit/' + ${timetable.id}}" class="edit-icon">✏️</a>
+                                    <!-- Chỉ hiển thị nút sửa/xóa cho teacher và admin -->
+                                    <div class="action-buttons" th:if="${userRole == 'teacher' or userRole == 'admin'}">
+                                        <a th:href="@{'/timetable/' + ${classroom.id} + '/edit/' + ${timetable.id}}" class="edit-icon" title="Sửa">✏️</a>
+                                        <form style="display: inline;" th:action="@{'/timetable/' + ${classroom.id} + '/delete/' + ${timetable.id}}" method="post" 
+                                              onsubmit="return confirm('Bạn có chắc chắn muốn xóa tiết học này?')">
+                                            <button type="submit" class="delete-icon" title="Xóa">🗑️</button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                             <div th:if="${daySchedules == null or !daySchedules.containsKey(p)}">
@@ -268,7 +334,64 @@
     <!-- BUTTONS -->
     <div style="margin-top: 2rem;">
         <a class="btn" href="/timetable">⬅ Quay lại danh sách lớp</a>
-            </div>
+    </div>
 </div>
+
+<script>
+// Validation trùng lặp thời khóa biểu phía client
+document.addEventListener('DOMContentLoaded', function() {
+    const scheduleData = {};
+    
+    // Thu thập dữ liệu thời khóa biểu hiện có từ DOM
+    /*[# th:each="d : ${daysOfWeek}" ]*/
+        /*[# th:each="p : ${periods}" ]*/
+            /*[# th:if="${scheduleMap != null and scheduleMap.containsKey(d) and scheduleMap.get(d) != null and scheduleMap.get(d).containsKey(p)}" ]*/
+                /*[( scheduleData['[[${d}]]'] = scheduleData['[[${d}]]'] || {}; scheduleData['[[${d}]]'][[[${p}]]] = true; )]*/ 
+            /*[/]*/
+        /*[/]*/
+    /*[/]*/
+    
+    // Hàm kiểm tra form thêm tiết học
+    function validateTimetableForm(form) {
+        const daySelect = form.querySelector('select[name="dayOfWeek"]');
+        const periodSelect = form.querySelector('select[name="period"]');
+        
+        if (!daySelect || !periodSelect) return true;
+        
+        const selectedDay = daySelect.value;
+        const selectedPeriod = parseInt(periodSelect.value);
+        
+        if (selectedDay && selectedPeriod && 
+            scheduleData[selectedDay] && scheduleData[selectedDay][selectedPeriod]) {
+            alert('Đã có môn học khác trong ' + selectedDay + ' - Tiết ' + selectedPeriod + '. Vui lòng chọn thời gian khác!');
+            return false;
+        }
+        
+        return true;
+    }
+    
+    // Gắn validation cho form thêm
+    const addForm = document.querySelector('form[action*="/add"]');
+    if (addForm) {
+        addForm.addEventListener('submit', function(e) {
+            if (!validateTimetableForm(this)) {
+                e.preventDefault();
+            }
+        });
+    }
+    
+    // Tự động ẩn thông báo sau 5 giây
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(function(alert) {
+        setTimeout(function() {
+            alert.style.opacity = '0';
+            setTimeout(function() {
+                alert.style.display = 'none';
+            }, 300);
+        }, 5000);
+    });
+});
+</script>
+
 </body>
 </html>
