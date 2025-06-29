@@ -66,9 +66,9 @@ public class TimetableController {
     @GetMapping("/{classId}/add")
     public String showAddTimetableForm(@PathVariable UUID classId, Model model) {
         Timetable timetable = new Timetable();
-        model.addAttribute("schedule", timetable); // Giữ tên schedule để tương thích với template
+        model.addAttribute("timetable", timetable); // Giữ tên schedule để tương thích với template
         model.addAttribute("classId", classId);
-        return "timetable/add-schedule";
+        return "timetable/add-timetable";
     }
 
     // Xử lý lưu buổi học mới
@@ -79,4 +79,19 @@ public class TimetableController {
         timetableService.saveTimetable(classId, timetable);
         return "redirect:/timetable/" + classId;
     }
+
+    @GetMapping("/{classId}/edit/{timetableId}")
+public String showEditTimetableForm(@PathVariable UUID classId,
+                                    @PathVariable Long timetableId,
+                                    Model model) {
+    Timetable timetable = timetableService.getById(timetableId);
+    if (timetable == null) {
+        return "redirect:/timetable/" + classId;
+    }
+
+    model.addAttribute("timetable", timetable);
+    model.addAttribute("classId", classId);
+
+    return "timetable/edit-timetable"; // ✅ tên file mới
+}
 }

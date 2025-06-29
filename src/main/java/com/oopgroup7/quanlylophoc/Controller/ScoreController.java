@@ -106,7 +106,7 @@ public String index(
     @GetMapping("/form")
     public String showForm(Model model) {
         model.addAttribute("score", new Score());
-        return "score/form";
+        return "Score/form";
     }
     
     
