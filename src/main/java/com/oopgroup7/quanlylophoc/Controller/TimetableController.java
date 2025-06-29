@@ -94,4 +94,28 @@ public String showEditTimetableForm(@PathVariable UUID classId,
 
     return "timetable/edit-timetable"; // ✅ tên file mới
 }
+
+    // Xử lý cập nhật timetable
+    @PostMapping("/{classId}/edit/{timetableId}")
+    public String updateTimetable(@PathVariable UUID classId,
+                                  @PathVariable Long timetableId,
+                                  @ModelAttribute Timetable timetable) {
+        // Lấy timetable hiện tại từ database
+        Timetable existingTimetable = timetableService.getById(timetableId);
+        if (existingTimetable == null) {
+            return "redirect:/timetable/" + classId;
+        }
+        
+        // Cập nhật các trường
+        existingTimetable.setDayOfWeek(timetable.getDayOfWeek());
+        existingTimetable.setPeriod(timetable.getPeriod());
+        existingTimetable.setSubject(timetable.getSubject());
+        existingTimetable.setTeacherName(timetable.getTeacherName());
+        
+        // Lưu lại
+        timetableService.save(existingTimetable);
+        
+        return "redirect:/timetable/" + classId;
+    }
+
 }

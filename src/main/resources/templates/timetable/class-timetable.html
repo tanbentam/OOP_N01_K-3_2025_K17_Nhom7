@@ -2,6 +2,9 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Thời Khóa Biểu - [[${classroom.className}]]</title>
     <style>
         body {
@@ -12,7 +15,7 @@
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 2rem auto;
             background: white;
             padding: 2rem;
@@ -23,6 +26,15 @@
         h1 {
             color: #333;
             margin-bottom: 1rem;
+        }
+
+        .debug-info {
+            background: #e3f2fd;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #2196f3;
+            font-family: monospace;
+            font-size: 13px;
         }
 
         .teacher-info, .student-list {
@@ -38,6 +50,63 @@
             content: "👤 ";
         }
 
+        .form-section {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #5a67d8, #6b46c1);
+        }
+
+        .btn-test {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            margin-left: 10px;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -45,32 +114,32 @@
         }
 
         th, td {
-            padding: 0.75rem 1rem;
+            padding: 12px;
             text-align: center;
             border: 1px solid #ccc;
+            vertical-align: top;
         }
 
         th {
             background-color: #667eea;
             color: white;
+            font-weight: bold;
         }
 
         tr:nth-child(even) {
             background-color: #f9f9f9;
         }
 
-        .back-link {
-            display: inline-block;
-            text-decoration: none;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 0.6rem 1.2rem;
-            border-radius: 5px;
-            transition: background 0.3s;
+        .schedule-cell {
+            min-height: 60px;
+            position: relative;
         }
 
-        .back-link:hover {
-            background: linear-gradient(135deg, #5a67d8, #6b46c1);
+        .schedule-content {
+            background: #e8f5e8;
+            padding: 8px;
+            border-radius: 4px;
+            margin: 2px;
         }
 
         .edit-icon {
@@ -87,6 +156,14 @@
         .edit-icon:hover {
             background: #5a35b1;
         }
+
+        .cell-debug {
+            font-size: 10px;
+            color: #666;
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+        }
     </style>
 </head>
 <body>
@@ -95,22 +172,57 @@
 
     <div class="teacher-info">
         <p><strong>👨‍🏫 Giáo viên chủ nhiệm:</strong>
-            <span th:text="${classroom.teacher.name}">Tên GV</span>
+            <span th:text="${classroom.teacher?.name}">Chưa có GV</span>
         </p>
     </div>
 
-    <div class="student-list">
-        <h3>📚 Danh sách học sinh:</h3>
-        <ul>
-            <li th:each="stu : ${classroom.studentList}" th:text="${stu.name}">Tên học sinh</li>
-        </ul>
+    <!-- FORM THÊM TIẾT HỌC -->
+    <div class="form-section">
+        <h3>➕ Thêm tiết học mới</h3>
+        <form th:action="@{'/timetable/' + ${classroom.id} + '/add'}" method="post">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="dayOfWeek">Thứ:</label>
+                    <select id="dayOfWeek" name="dayOfWeek" required>
+                        <option value="">Chọn thứ</option>
+                        <option value="Thứ 2">Thứ 2</option>
+                        <option value="Thứ 3">Thứ 3</option>
+                        <option value="Thứ 4">Thứ 4</option>
+                        <option value="Thứ 5">Thứ 5</option>
+                        <option value="Thứ 6">Thứ 6</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="period">Tiết:</label>
+                    <select id="period" name="period" required>
+                        <option value="">Chọn tiết</option>
+                        <option value="1">Tiết 1</option>
+                        <option value="2">Tiết 2</option>
+                        <option value="3">Tiết 3</option>
+                        <option value="4">Tiết 4</option>
+                        <option value="5">Tiết 5</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="subject">Môn học:</label>
+                    <input type="text" id="subject" name="subject" placeholder="Ví dụ: Toán" required>
+                </div>
+                <div class="form-group">
+                    <label for="teacherName">Giáo viên:</label>
+                    <input type="text" id="teacherName" name="teacherName" placeholder="Tên giáo viên" required>
+                </div>
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <button type="submit" class="btn">Thêm tiết học</button>
+                </div>
+            </div>
+        </form>
     </div>
 
+    <!-- BẢNG THỜI KHÓA BIỂU -->
     <div class="schedule-table">
         <h3>🗓️ Thời khóa biểu:</h3>
-    <div style="margin-top: 1.5rem;">
-        <a th:href="@{'/timetable/' + ${classroom.id} + '/add'}" class="back-link" style="margin-left: 1rem;">➕ Thêm buổi học</a>
-    </div>
+
         <table>
             <thead>
             <tr>
@@ -124,14 +236,28 @@
             </thead>
             <tbody>
             <tr th:each="p : ${periods}">
-                <td th:text="'Tiết ' + ${p}"></td>
-                <td th:each="d : ${daysOfWeek}">
-                    <div th:with="s=${scheduleMap[d]?.get(p)}">
-                        <span th:if="${s != null}">
-                            <span th:text="${s.subject + ' - ' + s.teacherName}"></span><br/>
-                            <a th:href="@{'/timetable/' + ${classroom.id} + '/edit/' + ${s.id}}" class="edit-icon">✏️</a>
-                        </span>
-                        <span th:if="${s == null}">-</span>
+                <td><strong th:text="'Tiết ' + ${p}">Tiết</strong></td>
+                <td th:each="d : ${daysOfWeek}" class="schedule-cell">
+                    <!-- Debug info cho từng ô -->
+                    <div class="cell-debug" th:text="${d} + '-' + ${p}"></div>
+                    
+                    <!-- Kiểm tra xem có lịch học không -->
+                    <div th:if="${scheduleMap != null and scheduleMap.containsKey(d)}">
+                        <div th:with="daySchedules=${scheduleMap.get(d)}">
+                            <div th:if="${daySchedules != null and daySchedules.containsKey(p)}">
+                                <div th:with="timetable=${daySchedules.get(p)}" class="schedule-content">
+                                    <div><strong th:text="${timetable.subject}">Subject</strong></div>
+                                    <div><small th:text="${timetable.teacherName}">Teacher</small></div>
+                                    <a th:href="@{'/timetable/' + ${classroom.id} + '/edit/' + ${timetable.id}}" class="edit-icon">✏️</a>
+                                </div>
+                            </div>
+                            <div th:if="${daySchedules == null or !daySchedules.containsKey(p)}">
+                                <span style="color: #ccc;">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div th:if="${scheduleMap == null or !scheduleMap.containsKey(d)}">
+                        <span style="color: #ccc;">-</span>
                     </div>
                 </td>
             </tr>
@@ -139,9 +265,10 @@
         </table>
     </div>
 
-    <div style="margin-top: 1.5rem;">
-        <a class="back-link" href="/timetable">⬅ Quay lại danh sách lớp</a>
-    </div>
+    <!-- BUTTONS -->
+    <div style="margin-top: 2rem;">
+        <a class="btn" href="/timetable">⬅ Quay lại danh sách lớp</a>
+            </div>
 </div>
 </body>
 </html>
