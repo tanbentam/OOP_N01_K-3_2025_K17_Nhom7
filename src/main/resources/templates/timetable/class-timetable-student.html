@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Thời Khóa Biểu - [[${classroom.className}]]</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .debug-info {
+            background: #e3f2fd;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #2196f3;
+            font-family: monospace;
+            font-size: 13px;
+        }
+
+        .teacher-info, .student-list {
+            margin-bottom: 1.5rem;
+        }
+
+        .student-list ul {
+            list-style: none;
+            padding-left: 1rem;
+        }
+
+        .student-list li::before {
+            content: "👤 ";
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #5a67d8, #6b46c1);
+        }
+
+        .btn-test {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            margin-left: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ccc;
+            vertical-align: top;
+        }
+
+        th {
+            background-color: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .schedule-cell {
+            min-height: 60px;
+            position: relative;
+        }
+
+        .schedule-content {
+            background: #e8f5e8;
+            padding: 8px;
+            border-radius: 4px;
+            margin: 2px;
+        }
+
+        .student-notice {
+            background: #fff3e0;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #ff9800;
+            margin: 20px 0;
+        }
+
+        .student-notice h3 {
+            color: #f57c00;
+            margin-bottom: 12px;
+        }
+
+        .student-notice p {
+            color: #555;
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+
+        .cell-debug {
+            font-size: 10px;
+            color: #666;
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 th:text="'Thời Khóa Biểu - ' + ${classroom.className}"></h1>
+
+    <div class="teacher-info">
+        <p><strong>👨‍🏫 Giáo viên chủ nhiệm:</strong>
+            <span th:text="${classroom.teacher?.name}">Chưa có GV</span>
+        </p>
+    </div>
+
+    <!-- THÔNG BÁO CHO HỌC SINH -->
+    <div class="student-notice">
+        <h3>📚 Dành cho học sinh</h3>
+        <p><strong>Lưu ý:</strong> Bạn đang xem thời khóa biểu với quyền học sinh. Bạn chỉ có thể xem thời khóa biểu, không thể thêm, sửa hoặc xóa tiết học.</p>
+        <p>Nếu có thay đổi về thời khóa biểu, vui lòng liên hệ với giáo viên chủ nhiệm hoặc ban giám hiệu.</p>
+    </div>
+
+    <!-- BẢNG THỜI KHÓA BIỂU -->
+    <div class="schedule-table">
+        <h3>🗓️ Thời khóa biểu:</h3>
+
+        <table>
+            <thead>
+            <tr>
+                <th>Tiết / Thứ</th>
+                <th>Thứ 2</th>
+                <th>Thứ 3</th>
+                <th>Thứ 4</th>
+                <th>Thứ 5</th>
+                <th>Thứ 6</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${periods}">
+                <td><strong th:text="'Tiết ' + ${p}">Tiết</strong></td>
+                <td th:each="d : ${daysOfWeek}" class="schedule-cell">
+                    <!-- Debug info cho từng ô -->
+                    <div class="cell-debug" th:text="${d} + '-' + ${p}"></div>
+                    
+                    <!-- Kiểm tra xem có lịch học không -->
+                    <div th:if="${scheduleMap != null and scheduleMap.containsKey(d)}">
+                        <div th:with="daySchedules=${scheduleMap.get(d)}">
+                            <div th:if="${daySchedules != null and daySchedules.containsKey(p)}">
+                                <div th:with="timetable=${daySchedules.get(p)}" class="schedule-content">
+                                    <div><strong th:text="${timetable.subject}">Subject</strong></div>
+                                    <div><small th:text="${timetable.teacherName}">Teacher</small></div>
+                                    <!-- Học sinh không có nút sửa/xóa -->
+                                </div>
+                            </div>
+                            <div th:if="${daySchedules == null or !daySchedules.containsKey(p)}">
+                                <span style="color: #ccc;">-</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div th:if="${scheduleMap == null or !scheduleMap.containsKey(d)}">
+                        <span style="color: #ccc;">-</span>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- BUTTONS -->
+    <div style="margin-top: 2rem;">
+        <a class="btn" href="/timetable">⬅ Quay lại danh sách lớp</a>
+    </div>
+</div>
+</body>
+</html>

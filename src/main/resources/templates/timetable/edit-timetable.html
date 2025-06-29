@@ -49,7 +49,7 @@
         <div class="form-container mx-auto col-md-8">
             <h2 class="form-title mb-4">📝 Sửa Buổi Học</h2>
 
-            <form th:action="@{'/timetable/' + ${classId} + '/edit/' + ${schedule.id}}" th:object="${schedule}" method="post">
+            <form th:action="@{'/timetable/' + ${classId} + '/edit/' + ${timetable.id}}" th:object="${timetable}" method="post">
                 
                 <div class="mb-3">
                     <label for="subject" class="form-label">📘 Môn học:</label>
@@ -64,7 +64,6 @@
                 <div class="mb-3">
                     <label for="dayOfWeek" class="form-label">📅 Ngày học:</label>
                     <select class="form-select" id="dayOfWeek" th:field="*{dayOfWeek}" required>
-                        <option value="">-- Chọn thứ --</option>
                         <option value="Thứ 2">Thứ 2</option>
                         <option value="Thứ 3">Thứ 3</option>
                         <option value="Thứ 4">Thứ 4</option>
@@ -76,7 +75,6 @@
                 <div class="mb-4">
                     <label for="period" class="form-label">⏰ Tiết học:</label>
                     <select class="form-select" id="period" th:field="*{period}" required>
-                        <option value="">-- Chọn tiết --</option>
                         <option value="1">Tiết 1</option>
                         <option value="2">Tiết 2</option>
                         <option value="3">Tiết 3</option>

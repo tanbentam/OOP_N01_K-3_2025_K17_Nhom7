@@ -35,4 +35,36 @@ public class TimetableServiceImpl implements TimetableService {
             throw new IllegalArgumentException("Classroom not found with ID: " + classId);
         }
     }
+
+    @Override
+    public Timetable getById(Long id) {
+        return timetableRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public void save(Timetable timetable) {
+        timetableRepository.save(timetable);
+    }
+    
+    @Override
+    public void deleteById(Long id) {
+        timetableRepository.deleteById(id);
+    }
+    
+    @Override
+    public boolean existsByClassIdAndDayOfWeekAndPeriod(UUID classId, String dayOfWeek, int period) {
+        List<Timetable> existingTimetables = timetableRepository.findByClassroom_Id(classId);
+        return existingTimetables.stream()
+                .anyMatch(t -> t.getDayOfWeek().equals(dayOfWeek) && t.getPeriod() == period);
+    }
+    
+    @Override
+    public boolean existsByClassIdAndDayOfWeekAndPeriodAndIdNot(UUID classId, String dayOfWeek, int period, Long excludeId) {
+        List<Timetable> existingTimetables = timetableRepository.findByClassroom_Id(classId);
+        return existingTimetables.stream()
+                .anyMatch(t -> t.getDayOfWeek().equals(dayOfWeek) && 
+                              t.getPeriod() == period && 
+                              !t.getId().equals(excludeId));
+    }
+
 }
