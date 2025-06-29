@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Danh sách ngày điểm danh</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header giống các trang khác -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">Trang Chủ</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="/students">Học Sinh</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/classrooms">Lớp Học</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/timetable">Thời Khóa Biểu</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/scores">Điểm Số</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/attendance">Điểm Danh</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/teachers">Giáo Viên</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h3>
+                <i class="fa-solid fa-calendar-days"></i>
+                Danh sách ngày điểm danh lớp 
+                <span th:text="${classroom != null ? classroom.className : 'Không xác định'}"></span>
+            </h3>
+        </div>
+        <div class="card-body">
+            <ul class="list-group">
+                <li th:each="date : ${dates}" class="list-group-item d-flex align-items-center justify-content-between">
+                    <div>
+                        <a th:href="@{/attendance/result(classId=${classroomId}, date=${#temporals.format(date, 'yyyy-MM-dd')})}">
+                            <i class="fa-regular fa-calendar-check text-success"></i>
+                            <span th:text="${#temporals.format(date, 'dd/MM/yyyy')}"></span>
+                        </a>
+                    </div>
+                    <form th:action="@{/attendance/deleteByClassAndDate}" method="post" style="margin:0;display:inline;" 
+                          onsubmit="return confirm('Bạn có chắc muốn xóa tất cả điểm danh của ngày này?');">
+                        <input type="hidden" name="classId" th:value="${classroomId}" />
+                        <input type="hidden" name="date" th:value="${#temporals.format(date, 'yyyy-MM-dd')}" />
+                        <button type="submit" class="btn btn-danger btn-sm">
+                            <i class="fa-solid fa-trash"></i> Xóa
+                        </button>
+                    </form>
+                </li>
+            </ul>
+            <div th:if="${#lists.isEmpty(dates)}" class="alert alert-info mt-3">
+                Chưa có ngày điểm danh nào cho lớp này.
+            </div>
+            <div class="mt-3">
+                <a th:href="@{/attendance/report}" class="btn btn-secondary">
+                    <i class="fa-solid fa-arrow-left"></i> Quay lại chọn lớp
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
