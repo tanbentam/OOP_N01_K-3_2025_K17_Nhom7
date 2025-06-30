@@ -125,13 +125,7 @@ public String showAddStudentForm(@PathVariable UUID id, Model model) {
         existing.setTeacher(classroom.getTeacher());
 
         // Gộp học sinh cũ + học sinh vừa được chọn (tránh mất học sinh cũ)
-        List<Student> updatedList = new ArrayList<>(existing.getStudentList());
-        updatedList.addAll(
-            classroom.getStudentList().stream()
-                .filter(s -> !updatedList.contains(s))
-                .collect(Collectors.toList())
-        );
-        existing.setStudentList(updatedList);
+        existing.setStudentList(classroom.getStudentList());
 
         classroomService.save(existing);
     }
