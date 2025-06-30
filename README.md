@@ -174,7 +174,7 @@ OOP_N01_K-3_2025_K17_Nhom7/
 ## 6. Mô tả chi tiết các đối tượng và chức năng
 
 ### 6.1. Quản trị viên (Admin)
-- **Thuộc tính:** Thuộc tính: id, username, password, role (admin)
+- **Thuộc tính:** id, username, password, role (admin)
 
 - **Chức năng:** Có tất cả các chức năng của Teacher, tuy nhiên có quyền Thêm/Sửa/Xoá thông tin của tất cả các giáo viên, Dashboard quản trị với thống kê số lượng học sinh, giáo viên, lớp học; Quản lý toàn bộ thông tin giáo viên (thêm/sửa/xóa); Có toàn quyền truy cập vào tất cả chức năng của hệ thống; Quản lý phân quyền người dùng
 ### 6.2. Giáo viên (Teacher)
