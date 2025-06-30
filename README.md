@@ -61,7 +61,6 @@ OOP_N01_K-3_2025_K17_Nhom7/
 ├── mvnw.cmd
 ├── pom.xml
 ├── README.md
-├── tree.txt
 ├── images/
 ├── src/
 │   ├── main/
@@ -174,7 +173,7 @@ OOP_N01_K-3_2025_K17_Nhom7/
 ## 6. Mô tả chi tiết các đối tượng và chức năng
 
 ### 6.1. Quản trị viên (Admin)
-- **Thuộc tính:** Thuộc tính: id, username, password, role (admin)
+- **Thuộc tính:**  id, username, password, role (admin)
 
 - **Chức năng:** Có tất cả các chức năng của Teacher, tuy nhiên có quyền Thêm/Sửa/Xoá thông tin của tất cả các giáo viên, Dashboard quản trị với thống kê số lượng học sinh, giáo viên, lớp học; Quản lý toàn bộ thông tin giáo viên (thêm/sửa/xóa); Có toàn quyền truy cập vào tất cả chức năng của hệ thống; Quản lý phân quyền người dùng
 ### 6.2. Giáo viên (Teacher)
@@ -494,6 +493,44 @@ stateDiagram-v2
     TimetableMenu --> [*] : Exit
 ```
 
+#7. Diagram quản lý giáo viên:
+```mermaid
+stateDiagram-v2
+    [*] --> TeacherMenu : Access Teacher Management
+    
+    TeacherMenu --> ViewAllTeachers : List All Teachers
+    TeacherMenu --> AddTeacher : Add New Teacher
+    TeacherMenu --> EditTeacher : Edit Teacher Info (Only Admin or Self)
+    TeacherMenu --> DeleteTeacher : Delete Teacher (Admin Only)
+    TeacherMenu --> SearchTeacher : Search Teachers
+    TeacherMenu --> ViewOwnProfile : View My Profile
+    
+    AddTeacher --> ValidateTeacherData : Submit Form (Admin Only)
+    EditTeacher --> ValidateTeacherData : Update Form (Admin or Self)
+    
+    ValidateTeacherData --> SaveTeacher : Valid Data
+    ValidateTeacherData --> TeacherError : Invalid Data
+    
+    SaveTeacher --> TeacherSuccess : Teacher Updated
+    TeacherError --> TeacherMenu : Show Error
+    TeacherSuccess --> TeacherMenu : Show Success
+    
+    SearchTeacher --> FilterTeachers : Apply Criteria
+    FilterTeachers --> DisplayResults : Show Results
+    DisplayResults --> TeacherMenu : Return to Menu
+    
+    DeleteTeacher --> ConfirmDelete : Confirm Action (Admin Only)
+    ConfirmDelete --> RemoveTeacher : Yes
+    ConfirmDelete --> TeacherMenu : No
+    RemoveTeacher --> TeacherMenu : Teacher Deleted
+    
+    ViewOwnProfile --> DisplayOwnInfo : Show My Information
+    DisplayOwnInfo --> EditOwnProfile : Edit My Profile
+    EditOwnProfile --> ValidateTeacherData : Update My Data
+    DisplayOwnInfo --> TeacherMenu : Return to Menu
+    
+    TeacherMenu --> [*] : Exit
+```
 ---
 ## 7. Hướng dẫn sử dụng
 
