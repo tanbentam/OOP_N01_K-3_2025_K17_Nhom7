@@ -222,49 +222,30 @@ public Student saveNew(Student student) {
 public boolean delete(UUID id) {
     try {
         // Kiểm tra xem học sinh có tồn tại không
-        if (!studentRepository.existsById(id)) {
-            System.out.println(" Không tìm thấy học sinh với ID: " + id);
-            return false;
-        }
-        
-        // Lấy thông tin học sinh để log
         Optional<Student> studentOpt = studentRepository.findById(id);
-        String studentName = studentOpt.map(Student::getName).orElse("Unknown");
-        
-        System.out.println(" Đang xóa học sinh: " + studentName + " (ID: " + id + ")");
-        
-        try {
-            
-            classroomStudentRepository.deleteAll(
-                classroomStudentRepository.findAll().stream()
-                    .filter(cs -> cs.getStudent().getId().equals(id))
-                    .toList()
-            );
-        } catch (Exception e) {
-            System.out.println(" Lỗi khi xóa quan hệ lớp học: " + e.getMessage());
-        }
-        
-        // Xóa học sinh
-        studentRepository.deleteById(id);
-        
-        try {
-            studentRepository.flush();
-        } catch (Exception e) {
-            System.out.println(" Flush warning: " + e.getMessage());
-        }
-        
-        boolean stillExists = studentRepository.existsById(id);
-        
-        if (!stillExists) {
-            System.out.println(" Xóa học sinh '" + studentName + "' thành công!");
-            return true;
-        } else {
-            System.out.println(" Lỗi: Học sinh vẫn tồn tại sau khi xóa");
+        if (!studentOpt.isPresent()) {
+            System.out.println("Không tìm thấy học sinh với ID: " + id);
             return false;
         }
+        
+        Student student = studentOpt.get();
+        String studentName = student.getName();
+        
+        System.out.println("Đang xóa học sinh: " + studentName + " (ID: " + id + ")");
+        
+        // Xóa tất cả quan hệ classroom_student trước
+        classroomStudentRepository.deleteAllByStudentId(id);
+        classroomStudentRepository.flush();
+        
+        // Xóa học sinh (cascade sẽ tự động xóa scores và attendance records)
+        studentRepository.delete(student);
+        studentRepository.flush();
+        
+        System.out.println("Xóa học sinh '" + studentName + "' thành công!");
+        return true;
         
     } catch (Exception e) {
-        System.err.println(" Lỗi khi xóa học sinh: " + e.getMessage());
+        System.err.println("Lỗi khi xóa học sinh: " + e.getMessage());
         e.printStackTrace();
         return false;
     }

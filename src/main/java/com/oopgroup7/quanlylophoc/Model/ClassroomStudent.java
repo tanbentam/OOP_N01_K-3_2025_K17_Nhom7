@@ -20,6 +20,8 @@ public class ClassroomStudent implements Serializable {
     @JoinColumn(name = "student_id")
     private Student student;
 
+    @Version
+    private Long version;
     // Có thể thêm các trường khác, ví dụ: ngày vào lớp, trạng thái...
     // private LocalDate joinDate;
 
@@ -30,4 +32,7 @@ public class ClassroomStudent implements Serializable {
     public void setClassroom(Classroom classroom) { this.classroom = classroom; }
     public Student getStudent() { return student; }
     public void setStudent(Student student) { this.student = student; }
+
+    public Long getVersion() { return version; }
+    public void setVersion(Long version) { this.version = version; }
 }
