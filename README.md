@@ -13,7 +13,7 @@
 | Họ tên              | MSSV      | Vai trò/Nhiệm vụ chính                                                 |
 |---------------------|-----------|------------------------------------------------------------------------|
 | Chu Thành Tân (*)   | 23010165  | Giao diện đăng nhập đăng ký, Quản lý Database, Framework, Template, Quản lý giáo viên, Phân quyền chức năng|
-| Nguyễn Văn Hải  | 23017261  | Quản lý học sinh, quản lý điểm danh, quản lý điểm số | 
+| Nguyễn Văn Hải  | 23017261  | Quản lý học sinh, quản lý điểm danh, quản lý điểm số, test case kiểm thử | 
 | Nguyễn Đức Lâm      | 22010267  | Quản lý lớp học, quản lý thời khoá biểu, báo cáo                       |
 | GVHD: Nguyễn Lệ Thu |           | Hướng dẫn, phản biện                                                   | 
 
