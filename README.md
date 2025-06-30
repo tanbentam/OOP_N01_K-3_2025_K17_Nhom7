@@ -213,6 +213,288 @@ Hiển thị đầy đủ thông tin: lớp, ngày, tiết học, môn học, gi
 
 ---
 
+## 7. Diagram
+
+- Class Diagram
+
+
+- Behavioural Diagram:
+
+```mermaid
+flowchart TB
+    %% Entry Point
+    Start([User Access]) --> Login[User Login]
+    Login --> RoleCheck{User Role?}
+    
+    %% Role-based Dashboards
+    RoleCheck -->|Admin| AdminDash[Admin Dashboard]
+    RoleCheck -->|Teacher| TeacherDash[Teacher Dashboard]
+    RoleCheck -->|Student| StudentDash[Student Dashboard]
+    
+    %% Core Functions
+    AdminDash --> StudentMgmt[Student Management]
+    AdminDash --> ClassMgmt[Classroom Management]
+    AdminDash --> TeacherMgmt[Teacher Management]
+    AdminDash --> ScoreMgmt[Score Management]
+    AdminDash --> AttendMgmt[Attendance Management]
+    AdminDash --> TimetableMgmt[Timetable Management]
+    
+    TeacherDash --> StudentMgmt
+    TeacherDash --> ScoreMgmt
+    TeacherDash --> AttendMgmt
+    TeacherDash --> TimetableMgmt
+    
+    StudentDash --> ViewScores[View Own Scores]
+    StudentDash --> ViewAttend[View Own Attendance]
+    StudentDash --> ViewTimetable[View Class Schedule]
+    
+    %% Student Management
+    StudentMgmt --> StudCRUD[Add/Edit/Delete/Search Students]
+    StudCRUD --> StudDB[(Student Database)]
+    
+    %% Score Management
+    ScoreMgmt --> ScoreOps[Add/Edit Scores & Statistics]
+    ScoreOps --> CalcStats[Calculate Score Distribution:<br/>Excellent ≥ 8.5<br/>Good 7.0-8.4<br/>Average 5.0-6.9<br/>Poor < 5.0]
+    ScoreOps --> ScoreDB[(Score Database)]
+    CalcStats --> ScoreDB
+    
+    %% Attendance Management
+    AttendMgmt --> TakeAttend[Take Daily Attendance]
+    AttendMgmt --> AttendReport[View Attendance Reports]
+    TakeAttend --> AttendDB[(Attendance Database)]
+    AttendReport --> AttendDB
+    
+    %% Classroom Management
+    ClassMgmt --> ClassOps[Create/Manage Classes<br/>Assign Students]
+    ClassOps --> ClassDB[(Classroom Database)]
+    
+    %% Timetable Management
+    TimetableMgmt --> ScheduleOps[Create/Edit Class Schedules]
+    ScheduleOps --> TimetableDB[(Timetable Database)]
+    
+    %% Student Views (Read-only)
+    ViewScores --> ScoreDB
+    ViewAttend --> AttendDB
+    ViewTimetable --> TimetableDB
+    
+    %% Logout
+    AdminDash --> Logout[Logout]
+    TeacherDash --> Logout
+    StudentDash --> Logout
+    Logout --> Start
+    
+    %% Styling
+    classDef entry fill:#e1f5fe
+    classDef role fill:#f3e5f5
+    classDef function fill:#fff3e0
+    classDef database fill:#e8f5e8
+    classDef view fill:#fce4ec
+    
+    class Start,Login,Logout entry
+    class RoleCheck,AdminDash,TeacherDash,StudentDash role
+    class StudentMgmt,ScoreMgmt,AttendMgmt,ClassMgmt,TimetableMgmt,StudCRUD,ScoreOps,CalcStats,TakeAttend,AttendReport,ClassOps,ScheduleOps function
+    class StudDB,ScoreDB,AttendDB,ClassDB,TimetableDB database
+    class ViewScores,ViewAttend,ViewTimetable view
+```
+
+
+- Activity Diagram:
+#1. Diagram đăng nhập:
+
+```mermaid
+stateDiagram-v2
+    [*] --> LoginPage : Access System
+    LoginPage --> ValidateCredentials : Enter Username/Password
+    
+    ValidateCredentials --> AdminDashboard : Admin Success
+    ValidateCredentials --> TeacherDashboard : Teacher Success
+    ValidateCredentials --> StudentDashboard : Student Success
+    ValidateCredentials --> LoginError : Invalid Credentials
+    
+    LoginError --> LoginPage : Retry Login
+    
+    AdminDashboard --> Logout : Admin Logout
+    TeacherDashboard --> Logout : Teacher Logout
+    StudentDashboard --> Logout : Student Logout
+    
+    Logout --> [*] : End Session
+```
+
+#2. Diagram quản lý học sinh:
+```mermaid
+stateDiagram-v2
+    [*] --> StudentMenu : Access Student Management
+    
+    StudentMenu --> AddStudent : Add New Student
+    StudentMenu --> EditStudent : Edit Student Info
+    StudentMenu --> DeleteStudent : Delete Student
+    StudentMenu --> SearchStudent : Search Students
+    
+    AddStudent --> ValidateStudentData : Submit Form
+    EditStudent --> ValidateStudentData : Update Form
+    
+    ValidateStudentData --> SaveStudent : Valid Data
+    ValidateStudentData --> StudentError : Invalid Data
+    
+    SaveStudent --> StudentSuccess : Database Updated
+    StudentError --> StudentMenu : Show Error
+    StudentSuccess --> StudentMenu : Show Success
+    
+    SearchStudent --> FilterStudents : Apply Criteria
+    FilterStudents --> DisplayResults : Show Results
+    DisplayResults --> StudentMenu : Return to Menu
+    
+    DeleteStudent --> ConfirmDelete : Confirm Action
+    ConfirmDelete --> RemoveStudent : Yes
+    ConfirmDelete --> StudentMenu : No
+    RemoveStudent --> StudentMenu : Student Deleted
+    
+    StudentMenu --> [*] : Exit
+```
+
+#3. Diagram quản lý điểm:
+```mermaid
+stateDiagram-v2
+    [*] --> ScoreMenu : Access Score Management
+    
+    ScoreMenu --> AddScore : Input New Score
+    ScoreMenu --> EditScore : Modify Existing Score
+    ScoreMenu --> ViewStatistics : Generate Statistics
+    ScoreMenu --> SearchScore : Search Scores
+    
+    AddScore --> FindStudent : Enter Student Code
+    FindStudent --> ValidateScore : Student Found
+    FindStudent --> ScoreError : Student Not Found
+    
+    ValidateScore --> SaveScore : Valid Score Data
+    ValidateScore --> ScoreError : Invalid Data
+    
+    SaveScore --> ScoreSuccess : Score Saved
+    ScoreError --> ScoreMenu : Show Error
+    ScoreSuccess --> ScoreMenu : Show Success
+    
+    state ScoreStatistics {
+        ViewStatistics --> LoadAllScores : Fetch All Scores
+        LoadAllScores --> CalculateExcellent : Filter Excellent
+        CalculateExcellent --> CalculateGood : Filter Good
+        CalculateGood --> CalculateAverage : Filter Average
+        CalculateAverage --> CalculatePoor : Filter Poor
+        CalculatePoor --> DisplayStats : Show Distribution
+    }
+    
+    DisplayStats --> ScoreMenu : Return to Menu
+    
+    EditScore --> LoadExistingScore : Load Score Data
+    LoadExistingScore --> UpdateScore : Modify Values
+    UpdateScore --> SaveScore : Submit Changes
+    
+    SearchScore --> ApplyFilters : Set Search Criteria
+    ApplyFilters --> ShowScoreResults : Display Results
+    ShowScoreResults --> ScoreMenu : Return to Menu
+    
+    ScoreMenu --> [*] : Exit
+```
+
+#4. Diagram quản lý điểm danh:
+```mermaid
+stateDiagram-v2
+    [*] --> AttendanceMenu : Access Attendance Management
+    
+    AttendanceMenu --> TakeAttendance : Take Daily Attendance
+    AttendanceMenu --> ViewReports : View Attendance Reports
+    AttendanceMenu --> EditAttendance : Edit Attendance Record
+    
+    TakeAttendance --> SelectClass : Choose Classroom
+    SelectClass --> SelectDate : Choose Date
+    SelectDate --> LoadStudents : Get Student List
+    LoadStudents --> MarkAttendance : Mark Present/Absent/Permission
+    MarkAttendance --> SaveAttendance : Submit Attendance
+    SaveAttendance --> AttendanceSuccess : Records Updated
+    AttendanceSuccess --> AttendanceMenu : Return to Menu
+    
+    ViewReports --> ChooseReportClass : Select Class
+    ChooseReportClass --> ShowAttendanceDates : Display Available Dates
+    ShowAttendanceDates --> ViewAttendanceResults : Show Report
+    ViewAttendanceResults --> AttendanceMenu : Return to Menu
+    
+    EditAttendance --> SelectRecord : Choose Record to Edit
+    SelectRecord --> ModifyAttendance : Update Status
+    ModifyAttendance --> SaveChanges : Submit Changes
+    SaveChanges --> AttendanceMenu : Changes Saved
+    
+    AttendanceMenu --> [*] : Exit
+```
+
+#5. Diagram Quản lý lớp học
+```mermaid
+stateDiagram-v2
+    [*] --> ClassroomMenu : Access Classroom Management
+    
+    ClassroomMenu --> AddClassroom : Create New Classroom
+    ClassroomMenu --> EditClassroom : Edit Classroom Info
+    ClassroomMenu --> AssignStudents : Assign Students to Class
+    ClassroomMenu --> ViewClassDetails : View Class Details
+    
+    AddClassroom --> ValidateClassData : Submit Form
+    ValidateClassData --> SaveClassroom : Valid Data
+    ValidateClassData --> ClassError : Invalid Data
+    
+    SaveClassroom --> ClassSuccess : Classroom Created
+    ClassError --> ClassroomMenu : Show Error
+    ClassSuccess --> ClassroomMenu : Show Success
+    
+    EditClassroom --> LoadClassData : Load Existing Data
+    LoadClassData --> UpdateClassroom : Modify Information
+    UpdateClassroom --> SaveClassroom : Submit Changes
+    
+    AssignStudents --> SelectStudentList : Choose Students
+    SelectStudentList --> UpdateClassroomStudents : Add to Class
+    UpdateClassroomStudents --> AssignSuccess : Students Assigned
+    AssignSuccess --> ClassroomMenu : Return to Menu
+    
+    ViewClassDetails --> DisplayClassInfo : Show Class Information
+    DisplayClassInfo --> ShowStudentList : Display Enrolled Students
+    ShowStudentList --> ClassroomMenu : Return to Menu
+    
+    ClassroomMenu --> [*] : Exit
+```
+#6. Diagram chức năng thời khoá biểu:
+```mermaid
+stateDiagram-v2
+    [*] --> TimetableMenu : Access Timetable Management
+    
+    TimetableMenu --> ViewTimetable : View Class Schedule
+    TimetableMenu --> AddSchedule : Add New Period
+    TimetableMenu --> EditSchedule : Edit Existing Period
+    TimetableMenu --> DeleteSchedule : Remove Period
+    
+    ViewTimetable --> SelectTimetableClass : Choose Class
+    SelectTimetableClass --> DisplayTimetable : Show Schedule
+    DisplayTimetable --> TimetableMenu : Return to Menu
+    
+    AddSchedule --> EnterScheduleDetails : Input Period Info
+    EnterScheduleDetails --> ValidateSchedule : Check Time Conflicts
+    ValidateSchedule --> SaveSchedule : No Conflicts
+    ValidateSchedule --> ScheduleError : Time Conflict Found
+    
+    SaveSchedule --> TimetableSuccess : Schedule Added
+    ScheduleError --> TimetableMenu : Show Error
+    TimetableSuccess --> TimetableMenu : Show Success
+    
+    EditSchedule --> SelectPeriod : Choose Period to Edit
+    SelectPeriod --> ModifySchedule : Update Details
+    ModifySchedule --> ValidateSchedule : Check Conflicts
+    
+    DeleteSchedule --> SelectPeriodToDelete : Choose Period
+    SelectPeriodToDelete --> ConfirmDeletion : Confirm Action
+    ConfirmDeletion --> RemovePeriod : Yes
+    ConfirmDeletion --> TimetableMenu : No
+    RemovePeriod --> TimetableMenu : Period Deleted
+    
+    TimetableMenu --> [*] : Exit
+```
+
+---
 ## 7. Hướng dẫn sử dụng
 
 ### 7.1. Cài đặt & chạy dự án
