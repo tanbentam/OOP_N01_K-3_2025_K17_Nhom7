@@ -296,10 +296,7 @@
             <tr th:each="p : ${periods}">
                 <td><strong th:text="'Tiết ' + ${p}">Tiết</strong></td>
                 <td th:each="d : ${daysOfWeek}" class="schedule-cell">
-                    <!-- Debug info cho từng ô -->
-                    <div class="cell-debug" th:text="${d} + '-' + ${p}"></div>
-                    
-                    <!-- Kiểm tra xem có lịch học không -->
+               <!-- Kiểm tra xem có lịch học không -->
                     <div th:if="${scheduleMap != null and scheduleMap.containsKey(d)}">
                         <div th:with="daySchedules=${scheduleMap.get(d)}">
                             <div th:if="${daySchedules != null and daySchedules.containsKey(p)}">
