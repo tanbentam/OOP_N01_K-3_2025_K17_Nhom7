@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Đăng ký Học sinh - Hệ thống Quản lý Lớp học</title>
+    <meta charset="UTF-8">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+        
+        .form-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .form-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .form-header h1 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-header p {
+            color: #666;
+            font-size: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .form-group input.error {
+            border-color: #e74c3c;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .form-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e1e5e9;
+        }
+        
+        .form-footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            margin: 0 0.5rem;
+        }
+        
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .alert {
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .alert-error {
+            background-color: #fee;
+            color: #c33;
+            border: 1px solid #fcc;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <div class="form-header">
+            <h1>👨‍🎓 Đăng ký Học sinh</h1>
+            <p>Điền thông tin để tạo tài khoản học sinh</p>
+        </div>
+        
+        <!-- Hiển thị lỗi validation - sửa lại điều kiện -->
+        <div th:if="${param.error}" class="alert alert-error">
+            <span>Có lỗi xảy ra khi đăng ký. Vui lòng thử lại.</span>
+        </div>
+        
+        <form th:action="@{/register/student}" th:object="${student}" method="post">
+            <div class="form-group">
+                <label for="name">Họ và tên *:</label>
+                <input type="text" id="name" th:field="*{name}" required placeholder="Nhập họ và tên">
+                <div th:if="${#fields.hasErrors('name')}" class="error-message" th:errors="*{name}"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="age">Tuổi *:</label>
+                <input type="number" id="age" th:field="*{age}" min="15" max="30" required placeholder="Nhập tuổi">
+                <div th:if="${#fields.hasErrors('age')}" class="error-message" th:errors="*{age}"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="username">Tên đăng nhập:</label>
+                <input type="text" id="username" th:field="*{username}" placeholder="Nhập tên đăng nhập (tùy chọn)">
+                <div th:if="${#fields.hasErrors('username')}" class="error-message" th:errors="*{username}"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Mật khẩu:</label>
+                <input type="password" id="password" th:field="*{password}" placeholder="Nhập mật khẩu (tùy chọn)">
+                <div th:if="${#fields.hasErrors('password')}" class="error-message" th:errors="*{password}"></div>
+            </div>
+            
+            <button type="submit" class="submit-btn">Đăng ký</button>
+        </form>
+        
+        <div class="form-footer">
+            <a th:href="@{/register}">← Quay lại</a>
+            <a th:href="@{/login}">Đã có tài khoản?</a>
+        </div>
+    </div>
+</body>
+</html>

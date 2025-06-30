@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Quản lý điểm</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .page-title {
+            background-color: #f8f9fa;
+            padding: 15px 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .btn-action {
+            width: 38px;
+            height: 38px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin: 0 3px;
+        }
+        
+        .table-responsive {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        
+        .table thead {
+            background-color: #4b70dd;
+            color: white;
+        }
+        
+        .empty-data {
+            text-align: center;
+            padding: 30px;
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        .search-bar {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header đơn giản -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/">Trang Chủ</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/students">Học Sinh</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/classrooms">Lớp Học</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/timetable">Thời Khóa Biểu</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/scores">Điểm Số</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="/attendance">Điểm Danh</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/teachers">Giáo Viên</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="container mt-4">
+        
+<!-- Title Section -->
+  <div class="page-title">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2><i class="fas fa-chart-line me-2"></i>Quản lý điểm số</h2>
+        <div>
+            <a th:href="@{/scores/by-subject}" class="btn btn-info me-2">
+                <i class="fas fa-book me-1"></i>Xem theo môn học
+            </a>
+            <a th:href="@{/scores/form}" class="btn btn-primary">
+                <i class="fas fa-plus-circle me-1"></i>Thêm điểm mới
+            </a>
+        </div>
+    </div>
+ </div>
+        
+        <!-- Alert Messages -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        
+        <!-- Filter and Search Section -->
+        <!-- Thêm ngay sau phần tiêu đề và trước bảng điểm -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form th:action="@{/scores/search}" method="get" class="row g-3">
+            <div class="col-md-4">
+                <label for="studentName" class="form-label">Tên học sinh</label>
+                <input type="text" class="form-control" id="studentName" name="studentName" 
+                       th:value="${studentName}" placeholder="Nhập tên học sinh...">
+            </div>
+            <div class="col-md-4">
+                <label for="className" class="form-label">Lớp</label>
+                <input type="text" class="form-control" id="className" name="className" 
+                       th:value="${className}" placeholder="Nhập tên lớp...">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">&nbsp;</label>
+                <div class="d-flex">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="fas fa-search me-1"></i>Tìm kiếm
+                    </button>
+                    <a th:href="@{/scores}" class="btn btn-secondary">
+                        <i class="fas fa-sync me-1"></i>Làm mới
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+        
+        <!-- Table Section -->
+        <div class="table-responsive">
+    <table class="table table-striped table-hover align-middle mb-0">
+        <thead>
+            <tr>
+                <th width="5%">STT</th>
+                <th width="10%">Mã học sinh</th>
+                <th width="20%">Tên học sinh</th>
+                <th width="20%">Lớp</th>
+                <th width="15%">Môn học</th>
+                <th width="10%">Điểm</th>
+                <th width="20%">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="score, iterStat : ${scores}">
+                <td th:text="${iterStat.count}"></td>
+                <td th:text="${score.student.studentCode}"></td>
+                <td th:text="${score.student.name}"></td>
+                <td th:text="${score.student.className}"></td>
+                <td th:text="${score.subject}"></td>
+                <td>
+                    <span class="badge"
+                          th:classappend="${score.value >= 8.5 ? 'bg-success' : 
+                                         (score.value >= 7.0 ? 'bg-info' : 
+                                         (score.value >= 5.0 ? 'bg-warning' : 'bg-danger'))}"
+                          th:text="${score.value}">
+                    </span>
+                </td>
+                <td>
+                    <!-- Thay đổi URL từ /scores/form/ thành /scores/edit/ -->
+                    <a th:href="@{'/scores/edit/' + ${score.id}}" class="btn btn-outline-primary btn-action" title="Sửa">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a th:href="@{'/scores/delete/' + ${score.id}}" class="btn btn-outline-danger btn-action" 
+                       onclick="return confirm('Bạn có chắc muốn xóa điểm này?');" title="Xóa">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(scores)}">
+                <td colspan="7" class="empty-data">
+                    <i class="fas fa-database fa-3x mb-3"></i>
+                    <p>Không có dữ liệu điểm nào. Bạn có thể thêm điểm mới bằng nút "Thêm điểm mới".</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+        
+        <!-- Thống kê đơn giản -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5>Thống kê điểm</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="alert alert-success text-center">
+                            <h5>Xuất sắc</h5>
+                            <h3><span th:text="${excellentCount ?: 0}"></span></h3>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="alert alert-info text-center">
+                            <h5>Giỏi</h5>
+                            <h3><span th:text="${goodCount ?: 0}"></span></h3>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="alert alert-warning text-center">
+                            <h5>Trung bình</h5>
+                            <h3><span th:text="${averageCount ?: 0}"></span></h3>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="alert alert-danger text-center">
+                            <h5>Yếu</h5>
+                            <h3><span th:text="${poorCount ?: 0}"></span></h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer đơn giản -->
+    <footer class="bg-light mt-5 py-3 text-center">
+    <div class="container">
+    </div>
+</footer>
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</body>
+</html>

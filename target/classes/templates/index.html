@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Trang chủ Quản lý Lớp học</title>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .menu { margin: 40px auto; width: 350px; }
+        .menu h2 { text-align: center; }
+        .menu ul { list-style: none; padding: 0; }
+        .menu li { margin: 18px 0; }
+        .menu a { 
+            display: block; 
+            padding: 12px; 
+            background: #1976d2; 
+            color: #fff; 
+            text-decoration: none; 
+            border-radius: 5px; 
+            text-align: center;
+            font-size: 18px;
+            transition: background 0.2s;
+        }
+        .menu a:hover { background: #1565c0; }
+    </style>
+</head>
+<body>
+    <div class="menu">
+        <h2>Trang chủ Quản lý Lớp học</h2>
+        <ul>
+            <li><a th:href="@{/students}">Quản lý Học sinh</a></li>
+            <li><a th:href="@{/teachers}">Quản lý Giáo viên</a></li>
+            <li><a th:href="@{/classrooms}">Quản lý Lớp học</a></li>
+            <li><a th:href="@{/scores}">Quản lý Điểm</a></li>
+            <li><a th:href="@{/attendance/form}">Điểm danh</a></li>
+        </ul>
+    </div>
+</body>
+</html>
