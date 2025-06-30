@@ -21,7 +21,7 @@ public interface AttendanceRepository extends JpaRepository<AttendanceRecord, UU
     @Query("SELECT a FROM AttendanceRecord a WHERE a.student.id IN (" +
        "SELECT cs.student.id FROM ClassroomStudent cs WHERE cs.classroom.id = :classroomId" +
        ") AND a.date = :date")
-List<AttendanceRecord> findByClassroomIdAndDate(@Param("classroomId") UUID classroomId, @Param("date") LocalDate date);
+    List<AttendanceRecord> findByClassroomIdAndDate(@Param("classroomId") UUID classroomId, @Param("date") LocalDate date);
     // Xóa tất cả điểm danh của một lớp trong một ngày (native query cho bảng trung gian)
     @Modifying
     @Query(value = "DELETE ar FROM attendance_records ar " +

@@ -339,8 +339,15 @@
 <script>
 // Validation trùng lặp thời khóa biểu phía client
 document.addEventListener('DOMContentLoaded', function() {
+
+    if (!sessionStorage.getItem('hasRefreshed')) {
+        sessionStorage.setItem('hasRefreshed', 'true');
+        setTimeout(function() {
+            location.reload();
+        }, 2000); // Refresh sau 2 giây
+    }
+
     const scheduleData = {};
-    
     // Thu thập dữ liệu thời khóa biểu hiện có từ DOM
     /*[# th:each="d : ${daysOfWeek}" ]*/
         /*[# th:each="p : ${periods}" ]*/
@@ -389,6 +396,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 300);
         }, 5000);
     });
+});
+window.addEventListener('beforeunload', function() {
+    sessionStorage.removeItem('hasRefreshed');
 });
 </script>
 
