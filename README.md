@@ -62,6 +62,8 @@ OOP_N01_K-3_2025_K17_Nhom7/
 ├── pom.xml
 ├── README.md
 ├── images/
+├── review/
+├── target/
 ├── src/
 │   ├── main/
 │   │   ├── java/
@@ -181,7 +183,7 @@ OOP_N01_K-3_2025_K17_Nhom7/
 - **Chức năng:** Quản lý thông tin cá nhân (chỉ được sửa thông tin của chính mình); Tìm kiếm thông tin giáo viên theo tên/khoa/môn học; Quản lý học sinh: thêm, sửa, xóa, tìm kiếm học sinh; Quản lý điểm số: nhập điểm, sửa điểm, xem điểm theo học sinh/lớp/môn; Điểm danh học sinh theo buổi học, quản lý báo cáo chuyên cần; Xem và quản lý thời khóa biểu; Xem danh sách lớp chủ nhiệm
 
 ### 6.3. Học sinh (Student)
-- **Thuộc tính:** id, studentCode (mã học sinh), name, age, gender, dateOfBirth, className, email, phoneNumber, username, lớp (classroomm), điểm (score), điểm danh.
+- **Thuộc tính:** id, studentCode (mã học sinh), name, age, gender, dateOfBirth, className, email, phoneNumber, username, lớp (classroom), điểm (score), điểm danh.
 - **Chức năng:** Xem điểm cá nhân theo các môn học, với hiển thị trực quan bằng badge màu theo mức điểm; Xem thông tin điểm danh cá nhân, báo cáo chuyên cần; Xem thời khóa biểu cá nhân và lớp học; Dashboard học sinh với các chức năng truy cập nhanh
 
 ### 6.4. Lớp học (Classroom)
@@ -215,7 +217,80 @@ Hiển thị đầy đủ thông tin: lớp, ngày, tiết học, môn học, gi
 ## 7. Diagram
 
 - Class Diagram
+```mermaid
+classDiagram
+    direction LR
 
+    class Teacher {
+        -UUID id
+        -String name
+        -String subject
+        -String department
+        -String username
+        -String password
+    }
+
+    class Student {
+        -UUID id
+        -String studentCode
+        -String name
+        -int age
+        -String gender
+        -LocalDate dateOfBirth
+        -String className
+        -String email
+        -String phoneNumber
+        -String username
+        -String password
+        -Score score
+        -List~AttendanceRecord~ attendanceRecords
+    }
+
+    class Classroom {
+        -UUID id
+        -String className
+        -Teacher teacher
+        -List~Student~ studentList
+        -List~ClassroomStudent~ classroomStudents
+        -List~Timetable~ timetables
+    }
+
+    class Timetable {
+        -Long id
+        -String dayOfWeek
+        -int period
+        -String subject
+        -String teacherName
+        -Classroom classroom
+    }
+
+    class Score {
+        -Long id
+        -String subject
+        -double scoreValue
+    }
+
+    class AttendanceRecord {
+        -Long id
+        -LocalDate date
+        -boolean isPresent
+        -boolean hasPermission
+        -Student student
+    }
+
+    class ClassroomStudent {
+        +ClassroomStudentId id
+        +Classroom classroom
+        +Student student
+    }
+
+    Teacher "1" -- "0..*" Classroom : "chủ nhiệm"
+    Classroom "1" -- "0..*" Timetable : "có"
+    Classroom "1" -- "0..*" ClassroomStudent : "có"
+    Student "1" -- "0..*" ClassroomStudent : "tham gia"
+    Student "1" -- "0..*" Score : "có"
+    Student "1" -- "0..*" AttendanceRecord : "có"
+```
 
 - Behavioural Diagram:
 
